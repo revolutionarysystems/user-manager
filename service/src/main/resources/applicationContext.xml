@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+	<bean class="org.apache.wink.spring.Registrar">
+		<property name="classes">
+			<set value-type="java.lang.Class"/>
+		</property>
+		<property name="instances">
+			<set>
+				<bean class="uk.co.revsys.user.manager.service.rest.AccountRestService">
+					<constructor-arg index="0" ref="accountService"/>
+				</bean>
+			</set>
+		</property>
+	</bean>
+	
+	<bean id="accountService" class="uk.co.revsys.user.manager.service.EntityServiceImpl">
+		<constructor-arg index="0" ref="accountDao"/>
+	</bean>
+	
+	<bean id="accountDao" class="uk.co.revsys.user.manager.service.dao.mongo.SpringDataMongoDao">
+		<constructor-arg index="0" ref="validator"/>
+		<constructor-arg index="1" ref="mongo"/>
+		<constructor-arg index="2" value="uk.co.revsys.user.manager.service.model.Account"/>
+	</bean>
+	
+	<bean id="validator" factory-bean="validatorFactory" factory-method="getValidator"/>
+	
+	<bean id="validatorFactory" class="javax.validation.Validation" factory-method="buildDefaultValidatorFactory"/>
+	
+	<bean id="mongo" class="org.springframework.data.mongodb.core.MongoTemplate">
+		<constructor-arg index="0" ref="mongoClient"/>
+		<constructor-arg index="1" value="user-manager"/>
+	</bean>
+	
+	<bean id="mongoClient" class="com.mongodb.MongoClient">
+		<constructor-arg index="0" value="localhost"/>
+	</bean>
+	
+</beans>
