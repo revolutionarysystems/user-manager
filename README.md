@@ -3,6 +3,6 @@ User Manager  [![Build Status](https://travis-ci.org/revolutionarysystems/user-m
 
 ### Modules
 
-* [Core](tree/master/core)
-* [Service](tree/master/service)
-* [Mongo](tree/master/mongo)
+* [Core](https://github.com/revolutionarysystems/user-manager/tree/master/core)
+* [Service](https://github.com/revolutionarysystems/user-manager/tree/master/service)
+* [Mongo](https://github.com/revolutionarysystems/user-manager/tree/master/mongo)
