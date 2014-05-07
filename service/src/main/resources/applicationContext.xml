@@ -16,6 +16,18 @@
 				<bean class="uk.co.revsys.user.manager.service.rest.AccountRestService">
 					<constructor-arg index="0" ref="accountService"/>
 				</bean>
+				<bean class="uk.co.revsys.user.manager.service.rest.ApplicationRestService">
+					<constructor-arg index="0" ref="applicationService"/>
+				</bean>
+				<bean class="uk.co.revsys.user.manager.service.rest.RoleRestService">
+					<constructor-arg index="0" ref="roleService"/>
+				</bean>
+				<bean class="uk.co.revsys.user.manager.service.rest.PermissionRestService">
+					<constructor-arg index="0" ref="permissionService"/>
+				</bean>
+				<bean class="uk.co.revsys.user.manager.service.rest.UserRestService">
+					<constructor-arg index="0" ref="userService"/>
+				</bean>
 			</set>
 		</property>
 	</bean>
@@ -24,10 +36,50 @@
 		<constructor-arg index="0" ref="accountDao"/>
 	</bean>
 	
-	<bean id="accountDao" class="uk.co.revsys.user.manager.service.dao.mongo.SpringDataMongoDao">
+	<bean id="userService" class="uk.co.revsys.user.manager.service.EntityServiceImpl">
+		<constructor-arg index="0" ref="userDao"/>
+	</bean>
+	
+	<bean id="applicationService" class="uk.co.revsys.user.manager.service.EntityServiceImpl">
+		<constructor-arg index="0" ref="applicationDao"/>
+	</bean>
+	
+	<bean id="roleService" class="uk.co.revsys.user.manager.service.EntityServiceImpl">
+		<constructor-arg index="0" ref="roleDao"/>
+	</bean>
+	
+	<bean id="permissionService" class="uk.co.revsys.user.manager.service.EntityServiceImpl">
+		<constructor-arg index="0" ref="permissionDao"/>
+	</bean>
+	
+	<bean id="accountDao" class="uk.co.revsys.user.manager.dao.mongo.SpringDataMongoDao">
 		<constructor-arg index="0" ref="validator"/>
 		<constructor-arg index="1" ref="mongo"/>
-		<constructor-arg index="2" value="uk.co.revsys.user.manager.service.model.Account"/>
+		<constructor-arg index="2" value="uk.co.revsys.user.manager.model.Account"/>
+	</bean>
+	
+	<bean id="userDao" class="uk.co.revsys.user.manager.dao.mongo.SpringDataMongoDao">
+		<constructor-arg index="0" ref="validator"/>
+		<constructor-arg index="1" ref="mongo"/>
+		<constructor-arg index="2" value="uk.co.revsys.user.manager.model.User"/>
+	</bean>
+	
+	<bean id="applicationDao" class="uk.co.revsys.user.manager.dao.mongo.SpringDataMongoDao">
+		<constructor-arg index="0" ref="validator"/>
+		<constructor-arg index="1" ref="mongo"/>
+		<constructor-arg index="2" value="uk.co.revsys.user.manager.model.Application"/>
+	</bean>
+	
+	<bean id="roleDao" class="uk.co.revsys.user.manager.dao.mongo.SpringDataMongoDao">
+		<constructor-arg index="0" ref="validator"/>
+		<constructor-arg index="1" ref="mongo"/>
+		<constructor-arg index="2" value="uk.co.revsys.user.manager.model.Role"/>
+	</bean>
+	
+	<bean id="permissionDao" class="uk.co.revsys.user.manager.dao.mongo.SpringDataMongoDao">
+		<constructor-arg index="0" ref="validator"/>
+		<constructor-arg index="1" ref="mongo"/>
+		<constructor-arg index="2" value="uk.co.revsys.user.manager.model.Permission"/>
 	</bean>
 	
 	<bean id="validator" factory-bean="validatorFactory" factory-method="getValidator"/>
