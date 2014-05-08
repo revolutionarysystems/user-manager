@@ -2,4 +2,4 @@ language: java
 before_install: "git clone http://github.com/revolutionarysystems/travis.git target/travis"
 script: "mvn deploy --settings target/travis/settings.xml"
 env:
-  - secure: "IjriDixwiigJw5KY1fZy6xuMJowe+bA+2r3hlnESoyUX+77T6pXA8PMzQA9ZGkk4a5ggR+1pZjllR66VgU2glXvg9184ZEoBcLeFieK1rJI8UzQFKGKVJTfysc3C4lCiCXaDh/MExeRH78nMrJSvBDpgocwCxX/loRN5ligY0ow="
+  - secure: "IINUc5RNc47DCbUASRoMzIyWlIdH6j5pLQlv4pD38GCcl/VISm8mo2r3m3X/bUyUUQN1lIr9LiagPJzmrAJclRywFAwzd+4omOys6nD/l+++e3Ur0XMuG0URtCnlytytzmyRNQskuN/s3s1kI6DAz9ex5BU/CBAKvi0usgp6MQg="
