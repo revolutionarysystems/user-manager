@@ -16,7 +16,7 @@ public class User extends AbstractEntity{
 	private Status status;
 	private Map<String, Object> attributes;
 	@NotNull
-	private String accountId;
+	private String account;
 	private List<String> roles;
 
 	public String getName() {
@@ -59,12 +59,12 @@ public class User extends AbstractEntity{
 		this.attributes = attributes;
 	}
 
-	public String getAccountId() {
-		return accountId;
+	public String getAccount() {
+		return account;
 	}
 
-	public void setAccountId(String accountId) {
-		this.accountId = accountId;
+	public void setAccountId(String account) {
+		this.account = account;
 	}
 
 	public List<String> getRoles() {
