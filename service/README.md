@@ -9,6 +9,13 @@ User Manager Service  [![Build Status](https://travis-ci.org/revolutionarysystem
 
 ## Accounts
 
+### Properties
+
+* name
+* status
+* applications
+* attributes
+
 ### Create an Account
 
 ##### Example Request
@@ -39,10 +46,11 @@ curl http://localhost:8080/user-manager-service/accounts/{accountId}
 
 ### Update an Account
 
-##### Updatable Attributes
+##### Updatable Properties
 
 * name
 * status
+* applications
 * attributes
 
 ##### Example Request
@@ -67,18 +75,28 @@ curl -X DELETE http://localhost:8080/user-manager-service/accounts/{accountId}
 
 ## Users
 
+### Properties
+
+* name
+* username
+* password
+* status
+* account
+* roles
+* attributes
+
 ### Create a User
 
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"name": "Test User 1", "username": "me@email.com", "password": "password123", "status": "enabled", "accountId": "536a00f4b16dba135714d14a", "attributes": {"p1": "v1"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/users/
+curl -X POST -d '{"name": "Test User 1", "username": "me@email.com", "password": "password123", "status": "enabled", "account": "536a00f4b16dba135714d14a", "attributes": {"p1": "v1"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/users/
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"enabled","attributes":{"p1":"v1"},"accountId":"536a00f4b16dba135714d14a","roles":null}
+{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"enabled","attributes":{"p1":"v1"},"account":"536a00f4b16dba135714d14a","roles":null}
 ```
 
 ### Retreive a User
@@ -92,18 +110,19 @@ curl http://localhost:8080/user-manager-service/users/{userId}
 ##### Example Response
 
 ```json
-{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"enabled","attributes":{"p1":"v1"},"accountId":"536a00f4b16dba135714d14a","roles":null}
+{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"enabled","attributes":{"p1":"v1"},"account":"536a00f4b16dba135714d14a","roles":null}
 ```
 
 ### Update a User
 
-##### Updatable Attributes
+##### Updatable Properties
 
 * name
 * username
 * password
 * status
-* accountId
+* account
+* roles
 * attributes
 
 ##### Example Request
@@ -115,7 +134,7 @@ curl -X POST -d '{"status": "disabled"}' -H "Content-Type: application/json" htt
 ##### Example Response
 
 ```json
-{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"disabled","attributes":{"p1":"v1"},"accountId":"536a00f4b16dba135714d14a","roles":null}
+{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"disabled","attributes":{"p1":"v1"},"account":"536a00f4b16dba135714d14a","roles":null}
 ```
 
 ### Delete a User
@@ -127,6 +146,13 @@ curl -X DELETE http://localhost:8080/user-manager-service/users/{userId}
 ```
 
 ## Applications
+
+### Properties
+
+* name
+* description
+* roles
+* attributes
 
 ### Create an Application
 
@@ -158,10 +184,11 @@ curl http://localhost:8080/user-manager-service/applications/{applicationId}
 
 ### Update an Application
 
-##### Updatable Attributes
+##### Updatable Properties
 
 * name
 * description
+* roles
 * attributes
 
 ##### Example Request
@@ -185,6 +212,12 @@ curl -X DELETE http://localhost:8080/user-manager-service/applications/{applicat
 ```
 
 ## Roles
+
+### Properties
+
+* name
+* description
+* permissions
 
 ### Create a Role
 
@@ -216,10 +249,11 @@ curl http://localhost:8080/user-manager-service/roles/{roleId}
 
 ### Update an Role
 
-##### Updatable Attributes
+##### Updatable Properties
 
 * name
 * description
+* permissions
 
 ##### Example Request
 
@@ -242,6 +276,11 @@ curl -X DELETE http://localhost:8080/user-manager-service/roles/{roleId}
 ```
 
 ## Permissions
+
+### Properties
+
+* name
+* description
 
 ### Create a Permission
 
@@ -273,7 +312,7 @@ curl http://localhost:8080/user-manager-service/permissions/{permissionId}
 
 ### Update a Permission
 
-##### Updatable Attributes
+##### Updatable Properties
 
 * name
 * description
