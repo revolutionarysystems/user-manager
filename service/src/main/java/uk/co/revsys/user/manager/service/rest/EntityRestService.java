@@ -23,6 +23,7 @@ import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.model.AbstractEntity ;
+import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.Constants;
 
 public abstract class EntityRestService<E extends AbstractEntity, S extends EntityService<E>> {
@@ -33,6 +34,7 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 	public EntityRestService(S service) {
 		this.service = service;
 		this.objectMapper = new ObjectMapper();
+		objectMapper.addMixInAnnotations(User.class, UserJacksonMixin.class);
 	}
 	
 	@GET

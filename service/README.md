@@ -6,7 +6,8 @@ User Manager Service  [![Build Status](https://travis-ci.org/revolutionarysystem
 * [Applications](#applications)
 * [Roles](#roles)
 * [Permissions](#permissions)
-* [Error Codes](#error-codes)
+* [Master Account](#master-account)
+* [Response Codes](#response-codes)
 * [API Access](#api-access)
 
 ## Accounts
@@ -339,6 +340,10 @@ curl --user username:password -X POST -d '{"description": "This is still a test 
 curl --user username:password -X DELETE http://localhost:8080/user-manager-service/permissions/{permissionId}
 ```
 
+## Master Account
+
+The user manager service gets deployed with a Master Account. This account has one Master User with administrator privileges giving it full access to the API. The credentials for using this user are master-user/changeme123. Obviously the password for this account should be changed as soon as possible.
+
 ## Response Codes
 
 * 200 SUCCESS - The request was successful
@@ -365,6 +370,6 @@ curl --user username:password -X DELETE http://localhost:8080/user-manager-servi
 	* Retrieve a user - Administrator, Account Owner and User
 	* Update a user - Administrator and Account Owner
 	* Delete a user - Administrator and Account Owner
-* Applications - User Manager Administrator only
-* Roles - User Manager Administrator only
-* Permissions - User Manager Administrator only
+* Applications - Administrator only
+* Roles - Administrator only
+* Permissions - Administrator only

@@ -11,9 +11,11 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.codec.Base64;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.util.ByteSource;
 import uk.co.revsys.user.manager.model.Account;
 import uk.co.revsys.user.manager.model.Permission;
 import uk.co.revsys.user.manager.model.Role;
@@ -49,20 +51,25 @@ public abstract class AbstractAuthorizingRealm extends AuthorizingRealm {
 			}
 			UsernamePasswordToken token = (UsernamePasswordToken) at;
 			User user = getUser(token);
-			if (user == null || !user.getPassword().equals(new String(token.getPassword())) || user.getStatus().equals(Status.disabled)) {
+			if (user == null || user.getStatus().equals(Status.disabled)) {
 				return null;
 			}
 			Account account = getAccount(user.getAccount());
 			if (account == null || account.getStatus().equals(Status.disabled)) {
 				return null;
 			}
+			String password = user.getPassword();
+			System.out.println("password = " + password);
+			String saltBase64 = user.getPasswordSalt();
+			System.out.println("saltBase64 = " + saltBase64);
+			byte[] saltBytes = Base64.decode(saltBase64);
 			SimplePrincipalCollection principalCollection = new SimplePrincipalCollection();
 			principalCollection.add(user.getId(), getName());
 			Map<String, Object> attributes = new HashMap<String, Object>();
 			attributes.put("name", user.getName());
 			principalCollection.add(user, getName());
-			SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(principalCollection, token.getCredentials());
-			authenticationInfo.setPrincipals(principalCollection);
+			SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(principalCollection, password, ByteSource.Util.bytes(saltBytes));
+			System.out.println("authenticationInfo = " + authenticationInfo);
 			return authenticationInfo;
 		} catch (RealmException ex) {
 			throw new AuthenticationException(ex);

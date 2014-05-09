@@ -5,7 +5,6 @@ import java.util.List;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import uk.co.revsys.user.manager.dao.EntityDao;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.Account;
@@ -19,35 +18,35 @@ public class ServiceInitializer implements ServletContextListener{
 	public void contextInitialized(ServletContextEvent sce) {
 		try {
 			ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("applicationContext.xml");
-			EntityDao<Account> accountDao = (EntityDao) applicationContext.getBean("accountDao");
-			EntityDao<User> userDao = (EntityDao) applicationContext.getBean("userDao");
-			EntityDao<Role> roleDao = (EntityDao) applicationContext.getBean("roleDao");
+			EntityService<Account> accountService = (EntityService<Account>) applicationContext.getBean("accountService");
+			UserService userService = (UserService) applicationContext.getBean("userService");
+			RoleService roleService = (RoleService) applicationContext.getBean("roleService");
 			String masterAccountId = Constants.MASTER_ACCOUNT_ID;
 			String masterUserRoleId = Constants.ADMINSTRATOR_ROLE_ID;
 			String masterUserId = Constants.MASTER_USER_ID;
 			String accountOwnerRoleId = Constants.ACCOUNT_OWNER_ROLE_ID;
-			if(accountDao.findById(masterAccountId)==null){
+			if(accountService.findById(masterAccountId)==null){
 				Account account = new Account();
 				account.setId(masterAccountId);
 				account.setName("Master Account");
 				account.setStatus(Status.enabled);
-				accountDao.create(account);
+				accountService.create(account);
 			}
-			if(roleDao.findById(masterUserRoleId)==null){
+			if(roleService.findById(masterUserRoleId)==null){
 				Role role = new Role();
 				role.setId(masterUserRoleId);
 				role.setName(masterUserRoleId);
 				role.setDescription("User Manager Administrator");
-				roleDao.create(role);
+				roleService.create(role);
 			}
-			if(roleDao.findById(accountOwnerRoleId)==null){
+			if(roleService.findById(accountOwnerRoleId)==null){
 				Role role = new Role();
 				role.setId(accountOwnerRoleId);
 				role.setName(accountOwnerRoleId);
 				role.setDescription("User Manager Account Owner");
-				roleDao.create(role);
+				roleService.create(role);
 			}
-			if(userDao.findById(masterUserId) == null){
+			if(userService.findById(masterUserId) == null){
 				User user = new User();
 				user.setId(masterUserId);
 				user.setAccount(masterAccountId);
@@ -58,7 +57,7 @@ public class ServiceInitializer implements ServletContextListener{
 				List<String> roles = new ArrayList<String>();
 				roles.add(masterUserRoleId);
 				user.setRoles(roles);
-				userDao.create(user);
+				userService.create(user);
 			}
 		} catch (DAOException ex) {
 			throw new RuntimeException(ex);

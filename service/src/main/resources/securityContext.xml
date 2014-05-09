@@ -47,6 +47,13 @@
 	<bean id="daoRealm" class="uk.co.revsys.user.manager.shiro.realm.DaoRealm">
 		<constructor-arg index="0" ref="accountService"/>
 		<constructor-arg index="1" ref="userService"/>
+		<property name="credentialsMatcher">
+			<bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+				<property name="hashAlgorithmName" value="SHA-256"/>
+				<property name="storedCredentialsHexEncoded" value="false"/>
+				<property name="hashIterations" value="500000"/>
+			</bean>
+		</property>
 	</bean>
 
 	<!-- =========================================================

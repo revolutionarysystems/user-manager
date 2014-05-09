@@ -58,6 +58,9 @@ public class SpringDataMongoDaoTest {
 			mongoDao.create(account1);
 			fail();
 		} catch (ConstraintViolationException ex) {
+			System.out.println(ex.getConstraintViolations().iterator().next());
+			System.out.println(ex.getConstraintViolations().iterator().next().getMessageTemplate());
+			System.out.println(ex.getConstraintViolations().iterator().next().getPropertyPath().getClass());
 			// Pass
 		}
 		account1.setStatus(Status.enabled);

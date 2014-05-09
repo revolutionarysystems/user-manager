@@ -15,6 +15,8 @@ public class User extends AbstractEntity{
 	@NotNull
 	private String password;
 	@NotNull
+	private String passwordSalt;
+	@NotNull
 	private Status status;
 	private Map<String, Object> attributes = new HashMap<String, Object>();
 	@NotNull
@@ -43,6 +45,14 @@ public class User extends AbstractEntity{
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getPasswordSalt() {
+		return passwordSalt;
+	}
+
+	public void setPasswordSalt(String passwordSalt) {
+		this.passwordSalt = passwordSalt;
 	}
 
 	public Status getStatus() {

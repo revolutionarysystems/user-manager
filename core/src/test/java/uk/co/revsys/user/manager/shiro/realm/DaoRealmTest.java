@@ -63,7 +63,8 @@ public class DaoRealmTest {
 		user.setId("user1");
 		user.setAccount(accountId);
 		user.setStatus(Status.enabled);
-		user.setPassword("password123");
+		user.setPassword("passwordhash");
+		user.setPasswordSalt("passwordsalt");
 		expect(mockUserService.findOne(isA(Map.class))).andReturn(user);
 		Account account = new Account();
 		account.setStatus(Status.enabled);
@@ -125,19 +126,6 @@ public class DaoRealmTest {
 		expect(mockUserService.findOne(isA(Map.class))).andReturn(user);
 		mocksControl.replay();
 		AuthenticationInfo result = daoRealm.doGetAuthenticationInfo(new UsernamePasswordToken("testuser", "password123"));
-		assertNull(result);
-		mocksControl.verify();
-	}
-	
-	@Test
-	public void testDoGetAuthenticationInfo_IncorrectPassword() throws Exception {
-		User user = new User();
-		user.setId("user1");
-		user.setStatus(Status.disabled);
-		user.setPassword("password123");
-		expect(mockUserService.findOne(isA(Map.class))).andReturn(user);
-		mocksControl.replay();
-		AuthenticationInfo result = daoRealm.doGetAuthenticationInfo(new UsernamePasswordToken("testuser", "incorrectpassword"));
 		assertNull(result);
 		mocksControl.verify();
 	}

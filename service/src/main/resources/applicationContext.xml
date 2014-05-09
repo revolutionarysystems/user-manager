@@ -44,6 +44,7 @@
 	<bean id="userService" class="uk.co.revsys.user.manager.service.UserService">
 		<constructor-arg index="0" ref="userDao"/>
 		<constructor-arg index="1" ref="roleService"/>
+		<constructor-arg index="2" ref="passwordService"/>
 	</bean>
 	
 	<bean id="applicationService" class="uk.co.revsys.user.manager.service.EntityServiceImpl">
@@ -101,5 +102,7 @@
 	<bean id="mongoClient" class="com.mongodb.MongoClient">
 		<constructor-arg index="0" value="localhost"/>
 	</bean>
+	
+	<bean id="passwordService" class="org.apache.shiro.authc.credential.DefaultPasswordService"></bean>
 	
 </beans>
