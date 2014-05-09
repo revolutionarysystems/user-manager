@@ -6,7 +6,7 @@ import uk.co.revsys.user.manager.model.Permission;
 
 
 @Path("/permissions")
-public class PermissionRestService extends EntityRestService<Permission>{
+public class PermissionRestService extends EntityRestService<Permission, EntityService<Permission>>{
 
 	public PermissionRestService(EntityService<Permission> service) {
 		super(service);

@@ -6,6 +6,8 @@ User Manager Service  [![Build Status](https://travis-ci.org/revolutionarysystem
 * [Applications](#applications)
 * [Roles](#roles)
 * [Permissions](#permissions)
+* [Error Codes](#error-codes)
+* [API Access](#api-access)
 
 ## Accounts
 
@@ -21,7 +23,7 @@ User Manager Service  [![Build Status](https://travis-ci.org/revolutionarysystem
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"name": "Test Account 1", "status": "enabled", "attributes": {"p1": "v1"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/accounts/
+curl --user username:password -X POST -d '{"name": "Test Account 1", "status": "enabled", "attributes": {"p1": "v1"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/accounts/
 ```
 
 ##### Example Response
@@ -35,7 +37,7 @@ curl -X POST -d '{"name": "Test Account 1", "status": "enabled", "attributes": {
 ##### Example Request
 
 ```sh
-curl http://localhost:8080/user-manager-service/accounts/{accountId}
+curl --user username:password http://localhost:8080/user-manager-service/accounts/{accountId}
 ```
 
 ##### Example Response
@@ -56,7 +58,7 @@ curl http://localhost:8080/user-manager-service/accounts/{accountId}
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"status": "disabled"}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/accounts/{accountId}
+curl --user username:password -X POST -d '{"status": "disabled"}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/accounts/{accountId}
 ```
 
 ##### Example Response
@@ -70,7 +72,7 @@ curl -X POST -d '{"status": "disabled"}' -H "Content-Type: application/json" htt
 ##### Example Request
 
 ```sh
-curl -X DELETE http://localhost:8080/user-manager-service/accounts/{accountId}
+curl --user username:password -X DELETE http://localhost:8080/user-manager-service/accounts/{accountId}
 ```
 
 ## Users
@@ -90,13 +92,13 @@ curl -X DELETE http://localhost:8080/user-manager-service/accounts/{accountId}
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"name": "Test User 1", "username": "me@email.com", "password": "password123", "status": "enabled", "account": "536a00f4b16dba135714d14a", "attributes": {"p1": "v1"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/users/
+curl --user username:password -X POST -d '{"name": "Test User 1", "username": "me@email.com", "password": "password123", "status": "enabled", "account": "536a00f4b16dba135714d14a", "attributes": {"p1": "v1"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/users/
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"enabled","attributes":{"p1":"v1"},"account":"536a00f4b16dba135714d14a","roles":null}
+{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"enabled","attributes":{"p1":"v1"},"account":"536a00f4b16dba135714d14a","roles":[]}
 ```
 
 ### Retreive a User
@@ -104,13 +106,13 @@ curl -X POST -d '{"name": "Test User 1", "username": "me@email.com", "password":
 ##### Example Request
 
 ```sh
-curl http://localhost:8080/user-manager-service/users/{userId}
+curl --user username:password http://localhost:8080/user-manager-service/users/{userId}
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"enabled","attributes":{"p1":"v1"},"account":"536a00f4b16dba135714d14a","roles":null}
+{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"enabled","attributes":{"p1":"v1"},"account":"536a00f4b16dba135714d14a","roles":[]}
 ```
 
 ### Update a User
@@ -128,13 +130,13 @@ curl http://localhost:8080/user-manager-service/users/{userId}
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"status": "disabled"}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/users/{userId}
+curl --user username:password -X POST -d '{"status": "disabled"}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/users/{userId}
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"disabled","attributes":{"p1":"v1"},"account":"536a00f4b16dba135714d14a","roles":null}
+{"id":"536a06c7b16d038a9d300c31","name":"Test User 1","username":"me@email.com","password":"password123","status":"disabled","attributes":{"p1":"v1"},"account":"536a00f4b16dba135714d14a","roles":[]}
 ```
 
 ### Delete a User
@@ -142,7 +144,7 @@ curl -X POST -d '{"status": "disabled"}' -H "Content-Type: application/json" htt
 ##### Example Request
 
 ```sh
-curl -X DELETE http://localhost:8080/user-manager-service/users/{userId}
+curl --user username:password -X DELETE http://localhost:8080/user-manager-service/users/{userId}
 ```
 
 ## Applications
@@ -159,13 +161,13 @@ curl -X DELETE http://localhost:8080/user-manager-service/users/{userId}
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"name": "Test Application", "description": "This is a test application", "attributes": {"p1": "v1"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/applications/
+curl --user username:password -X POST -d '{"name": "Test Application", "description": "This is a test application", "attributes": {"p1": "v1"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/applications/
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a0b2cb16d038a9d300c32","name":"Test Application","description":"This is a test application","roles":null,"attributes":{"p1":"v1"}}
+{"id":"536a0b2cb16d038a9d300c32","name":"Test Application","description":"This is a test application","roles":[],"attributes":{"p1":"v1"}}
 ```
 
 ### Retreive an Application
@@ -173,13 +175,13 @@ curl -X POST -d '{"name": "Test Application", "description": "This is a test app
 ##### Example Request
 
 ```sh
-curl http://localhost:8080/user-manager-service/applications/{applicationId}
+curl --user username:password http://localhost:8080/user-manager-service/applications/{applicationId}
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a0b2cb16d038a9d300c32","name":"Test Application","description":"This is a test application","roles":null,"attributes":{"p1":"v1"}}
+{"id":"536a0b2cb16d038a9d300c32","name":"Test Application","description":"This is a test application","roles":[],"attributes":{"p1":"v1"}}
 ```
 
 ### Update an Application
@@ -194,13 +196,13 @@ curl http://localhost:8080/user-manager-service/applications/{applicationId}
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"attributes": {"p1": "v2"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/applications/{applicationId}
+curl --user username:password -X POST -d '{"attributes": {"p1": "v2"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/applications/{applicationId}
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a0b2cb16d038a9d300c32","name":"Test Application","description":"This is a test application","roles":null,"attributes":{"p1":"v2"}}
+{"id":"536a0b2cb16d038a9d300c32","name":"Test Application","description":"This is a test application","roles":[],"attributes":{"p1":"v2"}}
 ```
 
 ### Delete a User
@@ -208,7 +210,7 @@ curl -X POST -d '{"attributes": {"p1": "v2"}}' -H "Content-Type: application/jso
 ##### Example Request
 
 ```sh
-curl -X DELETE http://localhost:8080/user-manager-service/applications/{applicationId}
+curl --user username:password -X DELETE http://localhost:8080/user-manager-service/applications/{applicationId}
 ```
 
 ## Roles
@@ -224,13 +226,13 @@ curl -X DELETE http://localhost:8080/user-manager-service/applications/{applicat
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"name": "Test Role", "description": "This is a test role"}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/roles/
+curl --user username:password -X POST -d '{"name": "Test Role", "description": "This is a test role"}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/roles/
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a4f17e6b975274927df1d","name":"Test Role","description":"This is a test role","permissions":null}
+{"id":"536a4f17e6b975274927df1d","name":"Test Role","description":"This is a test role","permissions":[]}
 ```
 
 ### Retreive an Role
@@ -238,13 +240,13 @@ curl -X POST -d '{"name": "Test Role", "description": "This is a test role"}' -H
 ##### Example Request
 
 ```sh
-curl http://localhost:8080/user-manager-service/roles/{roleId}
+curl --user username:password http://localhost:8080/user-manager-service/roles/{roleId}
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a4f17e6b975274927df1d","name":"Test Role","description":"This is a test role","permissions":null}
+{"id":"536a4f17e6b975274927df1d","name":"Test Role","description":"This is a test role","permissions":[]}
 ```
 
 ### Update an Role
@@ -258,13 +260,13 @@ curl http://localhost:8080/user-manager-service/roles/{roleId}
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"description": "This is still a test role"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/roles/{roleId}
+curl --user username:password -X POST -d '{"description": "This is still a test role"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/roles/{roleId}
 ```
 
 ##### Example Response
 
 ```json
-{"id":"536a4f17e6b975274927df1d","name":"Test Role","description":"This is still a test role","permissions":null}
+{"id":"536a4f17e6b975274927df1d","name":"Test Role","description":"This is still a test role","permissions":[]}
 ```
 
 ### Delete a Role
@@ -272,7 +274,7 @@ curl -X POST -d '{"description": "This is still a test role"}}' -H "Content-Type
 ##### Example Request
 
 ```sh
-curl -X DELETE http://localhost:8080/user-manager-service/roles/{roleId}
+curl --user username:password -X DELETE http://localhost:8080/user-manager-service/roles/{roleId}
 ```
 
 ## Permissions
@@ -287,7 +289,7 @@ curl -X DELETE http://localhost:8080/user-manager-service/roles/{roleId}
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"name": "Test Permission", "description": "This is a test role"}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/permissions/
+curl --user username:password -X POST -d '{"name": "Test Permission", "description": "This is a test role"}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/permissions/
 ```
 
 ##### Example Response
@@ -301,7 +303,7 @@ curl -X POST -d '{"name": "Test Permission", "description": "This is a test role
 ##### Example Request
 
 ```sh
-curl http://localhost:8080/user-manager-service/permissions/{permissionId}
+curl --user username:password http://localhost:8080/user-manager-service/permissions/{permissionId}
 ```
 
 ##### Example Response
@@ -320,7 +322,7 @@ curl http://localhost:8080/user-manager-service/permissions/{permissionId}
 ##### Example Request
 
 ```sh
-curl -X POST -d '{"description": "This is still a test permission"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/permissions/{permissionId}
+curl --user username:password -X POST -d '{"description": "This is still a test permission"}}' -H "Content-Type: application/json" http://localhost:8080/user-manager-service/permissions/{permissionId}
 ```
 
 ##### Example Response
@@ -334,5 +336,35 @@ curl -X POST -d '{"description": "This is still a test permission"}}' -H "Conten
 ##### Example Request
 
 ```sh
-curl -X DELETE http://localhost:8080/user-manager-service/permissions/{permissionId}
+curl --user username:password -X DELETE http://localhost:8080/user-manager-service/permissions/{permissionId}
 ```
+
+## Response Codes
+
+* 200 SUCCESS - The request was successful
+* 204 NO CONTENT - The request was successful and there was nothing to return
+* 400 BAD REQUEST - The request failed validation
+* 401 UNAUTHORISED - Invalid authentication credentials
+* 403 FORBIDDEN - You are not authorised to perform the request
+* 404 NOT FOUND - The resource you are looking for doesn't exist
+* 405 METHOD NOT ALLOWED - The HTTP method is not allowed for the url
+* 409 CONFLICT - You can't create the resource because one already exists that conflicts with it
+* 500 INTERNAL SERVER ERROR - The request failed for an unexpected reason
+
+## API Access
+
+* Accounts
+	* Retrieve all accounts - Administrator only
+	* Create an account - Administrator only
+	* Retrieve an account - Administrator and Account Owner
+	* Update and account - Administrator and Account Owner
+	* Delete an account - Administrator only
+* Users
+	* Retrieve all accounts - Administrator Only
+	* Create a user - Administrator and Account Owner
+	* Retrieve a user - Administrator, Account Owner and User
+	* Update a user - Administrator and Account Owner
+	* Delete a user - Administrator and Account Owner
+* Applications - User Manager Administrator only
+* Roles - User Manager Administrator only
+* Permissions - User Manager Administrator only

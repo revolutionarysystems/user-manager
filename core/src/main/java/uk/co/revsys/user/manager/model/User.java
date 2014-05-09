@@ -1,5 +1,7 @@
 package uk.co.revsys.user.manager.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -14,10 +16,10 @@ public class User extends AbstractEntity{
 	private String password;
 	@NotNull
 	private Status status;
-	private Map<String, Object> attributes;
+	private Map<String, Object> attributes = new HashMap<String, Object>();
 	@NotNull
 	private String account;
-	private List<String> roles;
+	private List<String> roles = new ArrayList<String>();
 
 	public String getName() {
 		return name;
@@ -63,7 +65,7 @@ public class User extends AbstractEntity{
 		return account;
 	}
 
-	public void setAccountId(String account) {
+	public void setAccount(String account) {
 		this.account = account;
 	}
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import javax.ws.rs.core.Response;
+import org.apache.shiro.subject.Subject;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
@@ -15,15 +16,17 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
-import sun.management.Agent;
 import uk.co.revsys.user.manager.model.Permission;
+import uk.co.revsys.user.manager.model.User;
+import uk.co.revsys.user.manager.service.AbstractShiroTest;
 import uk.co.revsys.user.manager.service.EntityService;
 
-public class EntityRestServiceTest {
+public class EntityRestServiceTest extends AbstractShiroTest{
 
 	private IMocksControl mocksControl;
 	private EntityService mockEntityService;
 	private EntityRestService entityRestService;
+	private Subject mockSubject;
 	private Permission permission1;
 	
     public EntityRestServiceTest() {
@@ -42,6 +45,8 @@ public class EntityRestServiceTest {
 		mocksControl = EasyMock.createControl();
 		mockEntityService = mocksControl.createMock(EntityService.class);
 		entityRestService = new EntityRestServiceImpl(mockEntityService);
+		mockSubject = mocksControl.createMock(Subject.class);
+		setSubject(mockSubject);
 		permission1 = new Permission();
 		permission1.setId("123");
 		permission1.setName("Test Permission");
@@ -50,6 +55,7 @@ public class EntityRestServiceTest {
 
     @After
     public void tearDown() {
+		clearSubject();
     }
 
 	@Test
@@ -139,6 +145,7 @@ public class EntityRestServiceTest {
 	@Test
 	public void testDelete() throws Exception {
 		String id = "123";
+		expect(mockEntityService.findById(id)).andReturn(new User());
 		mockEntityService.delete(id);
 		mocksControl.replay();
 		Response response = entityRestService.delete(id);
@@ -151,7 +158,7 @@ public class EntityRestServiceTest {
 		assertEquals(toJSONString(permission1), entityRestService.toJSONString(permission1));
 	}
 
-	public class EntityRestServiceImpl extends EntityRestService<Permission> {
+	public class EntityRestServiceImpl extends EntityRestService<Permission, EntityService<Permission>> {
 
 		public EntityRestServiceImpl(EntityService<Permission> entityService) {
 			super(entityService);

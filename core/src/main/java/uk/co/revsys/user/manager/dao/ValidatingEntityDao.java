@@ -5,6 +5,8 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
+import uk.co.revsys.user.manager.dao.exception.DAOException;
+import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.AbstractEntity;
 
 public abstract class ValidatingEntityDao<E extends AbstractEntity> implements EntityDao<E>{
@@ -16,13 +18,13 @@ public abstract class ValidatingEntityDao<E extends AbstractEntity> implements E
 	}
 	
 	@Override
-	public E create(E entity) throws IOException {
+	public E create(E entity) throws DAOException, DuplicateKeyException, ConstraintViolationException{
 		validate(entity);
 		return doCreate(entity);
 	}
 
 	@Override
-	public E update(E entity) throws IOException {
+	public E update(E entity) throws DAOException, ConstraintViolationException {
 		validate(entity);
 		return doUpdate(entity);
 	}
@@ -34,8 +36,8 @@ public abstract class ValidatingEntityDao<E extends AbstractEntity> implements E
 		}
 	}
 	
-	public abstract E doCreate(E entity) throws IOException;
+	public abstract E doCreate(E entity) throws DAOException, DuplicateKeyException;
 	
-	public abstract E doUpdate(E entity) throws IOException;
+	public abstract E doUpdate(E entity) throws DAOException;
 
 }

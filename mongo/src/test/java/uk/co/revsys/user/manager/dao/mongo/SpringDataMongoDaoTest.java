@@ -1,4 +1,3 @@
-
 package uk.co.revsys.user.manager.dao.mongo;
 
 import uk.co.revsys.user.manager.dao.mongo.SpringDataMongoDao;
@@ -21,29 +20,30 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.Account;
 import uk.co.revsys.user.manager.model.Status;
 
 public class SpringDataMongoDaoTest {
 
-    public SpringDataMongoDaoTest() {
-    }
+	public SpringDataMongoDaoTest() {
+	}
 
-    @BeforeClass
-    public static void setUpClass() {
-    }
+	@BeforeClass
+	public static void setUpClass() {
+	}
 
-    @AfterClass
-    public static void tearDownClass() {
-    }
+	@AfterClass
+	public static void tearDownClass() {
+	}
 
-    @Before
-    public void setUp() {
-    }
+	@Before
+	public void setUp() {
+	}
 
-    @After
-    public void tearDown() {
-    }
+	@After
+	public void tearDown() {
+	}
 
 	@Test
 	public void test() throws Exception {
@@ -54,10 +54,10 @@ public class SpringDataMongoDaoTest {
 		SpringDataMongoDao<Account> mongoDao = new SpringDataMongoDao<Account>(validator, new MongoTemplate(mongoClient, "user-manager"), Account.class);
 		Account account1 = new Account();
 		account1.setName("Test Account");
-		try{
+		try {
 			mongoDao.create(account1);
 			fail();
-		}catch(ConstraintViolationException ex){
+		} catch (ConstraintViolationException ex) {
 			// Pass
 		}
 		account1.setStatus(Status.enabled);
@@ -66,6 +66,12 @@ public class SpringDataMongoDaoTest {
 		System.out.println("account1Id = " + account1Id);
 		assertNotNull(account1Id);
 		assertEquals(24, account1Id.length());
+		try {
+			mongoDao.create(account1);
+			fail();
+		} catch (DuplicateKeyException ex) {
+			// Pass
+		}
 		result = mongoDao.findById(account1Id);
 		assertEquals(account1Id, result.getId());
 		assertEquals("Test Account", result.getName());

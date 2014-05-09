@@ -1,5 +1,7 @@
 package uk.co.revsys.user.manager.model;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -10,8 +12,8 @@ public class Application extends AbstractEntity{
 	private String name;
 	@NotNull
 	private String description;
-	private List<String> roles;
-	private Map<String, Object> attributes;
+	private List<String> roles = new ArrayList<String>();
+	private Map<String, Object> attributes = new HashMap<String, Object>();
 
 	public String getName() {
 		return name;

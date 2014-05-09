@@ -1,14 +1,92 @@
 package uk.co.revsys.user.manager.service.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.List;
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import uk.co.revsys.user.manager.service.EntityService;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import uk.co.revsys.user.manager.dao.exception.DAOException;
+import uk.co.revsys.user.manager.model.Account;
+import uk.co.revsys.user.manager.model.Permission;
+import uk.co.revsys.user.manager.model.Role;
 import uk.co.revsys.user.manager.model.User;
+import uk.co.revsys.user.manager.service.Constants;
+import uk.co.revsys.user.manager.service.UserService;
 
 @Path("/users")
-public class UserRestService extends EntityRestService<User>{
+public class UserRestService extends EntityRestService<User, UserService>{
 
-	public UserRestService(EntityService<User> service) {
+	public UserRestService(UserService service) {
 		super(service);
+	}
+	
+	@GET
+	@Path("/{id}/roles")
+	public Response getRoles(@PathParam("id") String userId){
+		try {
+			User user = getService().findById(userId);
+			if(user==null){
+				return Response.status(Response.Status.NOT_FOUND).build();
+			}
+			List<Role> roles = getService().getRoles(user);
+			return Response.ok(toJSONString(roles)).build();
+		} catch (DAOException ex) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		} catch (JsonProcessingException ex) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+	
+	@GET
+	@Path("/{id}/permissions")
+	public Response getPermissions(@PathParam("id") String userId){
+		try {
+			User user = getService().findById(userId);
+			if(user==null){
+				return Response.status(Response.Status.NOT_FOUND).build();
+			}
+			List<Permission> permissions = getService().getPermissions(user);
+			return Response.ok(toJSONString(permissions)).build();
+		} catch (DAOException ex) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		} catch (JsonProcessingException ex) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
+	}
+
+	@Override
+	protected boolean isAuthorisedToDelete(User e) {
+		return isAdministrator() || isAccountOwner(e);
+	}
+
+	@Override
+	protected boolean isAuthorisedToUpdate(User e) {
+		return isAdministrator() || isAccountOwner(e);
+	}
+
+	@Override
+	protected boolean isAuthorisedToFindById(User e) {
+		return isAdministrator() || isAccountOwner(e) || isUser(e);
+	}
+
+	@Override
+	protected boolean isAuthorisedToCreate(User e) {
+		return isAdministrator() || isAccountOwner(e);
+	}
+	
+	protected boolean isAccountOwner(User e){
+		Subject subject = SecurityUtils.getSubject();
+		User user = subject.getPrincipals().oneByType(User.class);
+		return subject.hasRole(Constants.ACCOUNT_OWNER_ROLE) && user.getAccount().equals(e.getAccount());
+	}
+	
+	protected boolean isUser(User e){
+		Subject subject = SecurityUtils.getSubject();
+		User user = subject.getPrincipals().oneByType(User.class);
+		return user.getId().equals(e.getId());
 	}
 
 	@Override

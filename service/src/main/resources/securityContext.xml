@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager"/>
+		<!-- override these for application-specific URLs if you like:
+		<property name="loginUrl" value="/login.jsp"/>
+		<property name="successUrl" value="/home.jsp"/>
+		<property name="unauthorizedUrl" value="/unauthorized.jsp"/> -->
+		<!-- The 'filters' property is not necessary since any declared javax.servlet.Filter bean  -->
+		<!-- defined will be automatically acquired and available via its beanName in chain        -->
+		<!-- definitions, but you can perform instance overrides or name aliases here if you like: -->
+		<!-- <property name="filters">
+			<util:map>
+				<entry key="anAlias" value-ref="someFilter"/>
+			</util:map>
+		</property> -->
+		<property name="filterChainDefinitions">
+			<value>
+				# some example chain definitions:
+				#/admin/** = authc, roles[admin]
+				#/docs/** = authc, perms[document:read]
+				/login = authc
+				/applications/** = authcBasic, roles[user-manager:administrator]
+				/roles/** = authcBasic, roles[user-manager:administrator]
+				/permissions/** = authcBasic, roles[user-manager:administrator]
+				/**/all = authcBasic, roles[user-manager:administrator]
+				/** = authcBasic
+			</value>
+		</property>
+	</bean>
+
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="daoRealm"/>
+		<property name="subjectDAO" ref="subjectDAO" />
+	</bean>
+
+	<bean id="subjectDAO" class="org.apache.shiro.mgt.DefaultSubjectDAO">
+		<property name="sessionStorageEvaluator" ref="sessionStorageEvaluator"/>
+	</bean>
+
+	<bean id="sessionStorageEvaluator" class="org.apache.shiro.web.mgt.DefaultWebSessionStorageEvaluator">
+		<property name="sessionStorageEnabled" value="false"/>
+	</bean>
+
+	<bean id="daoRealm" class="uk.co.revsys.user.manager.shiro.realm.DaoRealm">
+		<constructor-arg index="0" ref="accountService"/>
+		<constructor-arg index="1" ref="userService"/>
+	</bean>
+
+	<!-- =========================================================
+		 Shiro Spring-specific integration
+		 ========================================================= -->
+	<!-- Post processor that automatically invokes init() and destroy() methods
+		 for Spring-configured Shiro objects so you don't have to
+		 1) specify an init-method and destroy-method attributes for every bean
+			definition and
+		 2) even know which Shiro objects require these methods to be
+			called. -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+	<!-- Enable Shiro Annotations for Spring-configured beans.  Only run after
+		 the lifecycleBeanProcessor has run: -->
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		  depends-on="lifecycleBeanPostProcessor"/>
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager"/>
+	</bean>
+
+</beans>

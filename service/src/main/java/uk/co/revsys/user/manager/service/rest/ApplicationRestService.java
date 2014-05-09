@@ -5,7 +5,7 @@ import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.model.Application;
 
 @Path("/applications")
-public class ApplicationRestService extends EntityRestService<Application>{
+public class ApplicationRestService extends EntityRestService<Application, EntityService<Application>>{
 
 	public ApplicationRestService(EntityService<Application> service) {
 		super(service);

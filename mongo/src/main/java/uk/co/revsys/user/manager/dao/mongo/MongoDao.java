@@ -1,5 +1,6 @@
 package uk.co.revsys.user.manager.dao.mongo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -16,6 +17,8 @@ import java.util.Map;
 import java.util.UUID;
 import javax.validation.Validator;
 import uk.co.revsys.user.manager.dao.ValidatingEntityDao;
+import uk.co.revsys.user.manager.dao.exception.DAOException;
+import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.AbstractEntity;
 
 public class MongoDao<E extends AbstractEntity> extends ValidatingEntityDao<E> {
@@ -33,55 +36,75 @@ public class MongoDao<E extends AbstractEntity> extends ValidatingEntityDao<E> {
 	}
 
 	@Override
-	public E doCreate(E entity) throws IOException {
-		entity.setId(UUID.randomUUID().toString());
-		WriteResult writeResult = dbCollection.insert((DBObject) JSON.parse(objectMapper.writeValueAsString(entity)));
-		return entity;
+	public E doCreate(E entity) throws DAOException, DuplicateKeyException {
+		try {
+			entity.setId(UUID.randomUUID().toString());
+			WriteResult writeResult = dbCollection.insert((DBObject) JSON.parse(objectMapper.writeValueAsString(entity)));
+			return entity;
+		} catch (JsonProcessingException ex) {
+			throw new DAOException(ex);
+		}
 	}
 
 	@Override
-	public List<E> findAll() throws IOException {
+	public List<E> findAll() throws DAOException {
 		return find(new HashMap());
 	}
 
 	@Override
-	public E findById(String id) throws IOException {
-		DBObject result = dbCollection.findOne(new BasicDBObject("_id", id));
-		if (result == null) {
-			return null;
+	public E findById(String id) throws DAOException {
+		try {
+			DBObject result = dbCollection.findOne(new BasicDBObject("_id", id));
+			if (result == null) {
+				return null;
+			}
+			return objectMapper.readValue(result.toString(), entityType);
+		} catch (IOException ex) {
+			throw new DAOException(ex);
 		}
-		return objectMapper.readValue(result.toString(), entityType);
 	}
 
 	@Override
-	public E doUpdate(E entity) throws IOException {
-		WriteResult writeResult = dbCollection.save((DBObject) JSON.parse(objectMapper.writeValueAsString(entity)));
-		return entity;
+	public E doUpdate(E entity) throws DAOException {
+		try {
+			WriteResult writeResult = dbCollection.save((DBObject) JSON.parse(objectMapper.writeValueAsString(entity)));
+			return entity;
+		} catch (JsonProcessingException ex) {
+			throw new DAOException(ex);
+		}
 	}
 
 	@Override
-	public void delete(String id) throws IOException{
+	public void delete(String id) throws DAOException{
 		dbCollection.remove(new BasicDBObject("_id", id));
 	}
 
 	@Override
-	public List<E> find(Map<String, Object> filters) throws IOException{
-		DBCursor cursor = dbCollection.find((DBObject) JSON.parse(objectMapper.writeValueAsString(filters)));
-		List<E> results = new LinkedList<E>();
-		while (cursor.hasNext()) {
-			DBObject next = cursor.next();
-			results.add(objectMapper.readValue(next.toString(), entityType));
+	public List<E> find(Map<String, Object> filters) throws DAOException{
+		try {
+			DBCursor cursor = dbCollection.find((DBObject) JSON.parse(objectMapper.writeValueAsString(filters)));
+			List<E> results = new LinkedList<E>();
+			while (cursor.hasNext()) {
+				DBObject next = cursor.next();
+				results.add(objectMapper.readValue(next.toString(), entityType));
+			}
+			return results;
+		} catch (IOException ex) {
+			throw new DAOException(ex);
 		}
-		return results;
 	}
 
 	@Override
-	public E findOne(Map<String, Object> filters) throws IOException {
-		DBObject result = dbCollection.findOne((DBObject) JSON.parse(objectMapper.writeValueAsString(filters)));
-		if (result == null) {
-			return null;
+	public E findOne(Map<String, Object> filters) throws DAOException {
+		try {
+			DBObject result = dbCollection.findOne((DBObject) JSON.parse(objectMapper.writeValueAsString(filters)));
+			if (result == null) {
+				return null;
+			}
+			return objectMapper.readValue(result.toString(), entityType);
+		} catch (IOException ex) {
+			throw new DAOException(ex);
 		}
-		return objectMapper.readValue(result.toString(), entityType);
 	}
 
 }

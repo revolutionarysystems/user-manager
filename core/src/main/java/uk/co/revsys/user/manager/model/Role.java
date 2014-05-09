@@ -1,5 +1,6 @@
 package uk.co.revsys.user.manager.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 
@@ -9,7 +10,7 @@ public class Role extends AbstractEntity{
 	private String name;
 	@NotNull
 	private String description;
-	private List<String> permissions;
+	private List<String> permissions = new ArrayList<String>();
 
 	public String getName() {
 		return name;

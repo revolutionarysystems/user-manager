@@ -1,5 +1,6 @@
 package uk.co.revsys.user.manager.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -10,7 +11,7 @@ public class Account extends AbstractEntity{
 	private String name;
 	@NotNull
 	private Status status;
-	private List<Application> applications;
+	private List<Application> applications = new ArrayList<Application>();
 	private Map<String, Object> attributes;
 
 	public String getName() {

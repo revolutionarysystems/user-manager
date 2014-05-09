@@ -1,6 +1,5 @@
 package uk.co.revsys.user.manager.dao.mongo;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,9 +8,11 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import uk.co.revsys.user.manager.dao.ValidatingEntityDao;
+import uk.co.revsys.user.manager.dao.exception.DAOException;
+import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.AbstractEntity;
 
-public class SpringDataMongoDao<E extends AbstractEntity> extends ValidatingEntityDao<E>{
+public class SpringDataMongoDao<E extends AbstractEntity> extends ValidatingEntityDao<E> {
 
 	private final MongoOperations mongoOps;
 	private final Class<? extends E> entityType;
@@ -21,50 +22,54 @@ public class SpringDataMongoDao<E extends AbstractEntity> extends ValidatingEnti
 		this.mongoOps = mongoOps;
 		this.entityType = entityType;
 	}
-	
+
 	@Override
-	public E doCreate(E entity) throws IOException {
-		mongoOps.insert(entity);
-		return entity;
+	public E doCreate(E entity) throws DAOException, DuplicateKeyException {
+		try {
+			mongoOps.insert(entity);
+			return entity;
+		} catch (org.springframework.dao.DuplicateKeyException ex) {
+			throw new DuplicateKeyException(ex);
+		}
 	}
 
 	@Override
-	public List<E> findAll() throws IOException {
+	public List<E> findAll() throws DAOException {
 		return (List<E>) mongoOps.findAll(entityType);
 	}
 
 	@Override
-	public E findById(String id) throws IOException {
+	public E findById(String id) throws DAOException {
 		return mongoOps.findById(id, entityType);
 	}
 
 	@Override
-	public E doUpdate(E entity) throws IOException {
+	public E doUpdate(E entity) throws DAOException {
 		mongoOps.save(entity);
 		return entity;
 	}
 
 	@Override
-	public void delete(String id) throws IOException {
+	public void delete(String id) throws DAOException {
 		E entity = findById(id);
-		if(entity!=null){
+		if (entity != null) {
 			mongoOps.remove(entity);
 		}
 	}
 
 	@Override
-	public List<E> find(Map<String, Object> filters) throws IOException {
+	public List<E> find(Map<String, Object> filters) throws DAOException {
 		return (List<E>) mongoOps.find(convertMapToQuery(filters), entityType);
 	}
 
 	@Override
-	public E findOne(Map<String, Object> filters) throws IOException {
+	public E findOne(Map<String, Object> filters) throws DAOException {
 		return mongoOps.findOne(convertMapToQuery(filters), entityType);
 	}
-	
-	private Query convertMapToQuery(Map<String, Object> filters){
+
+	private Query convertMapToQuery(Map<String, Object> filters) {
 		Query query = new Query();
-		for(Entry<String, Object> filter: filters.entrySet()){
+		for (Entry<String, Object> filter : filters.entrySet()) {
 			query.addCriteria(new Criteria(filter.getKey()).is(filter.getValue()));
 		}
 		return query;

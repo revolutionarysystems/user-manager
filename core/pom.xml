@@ -6,7 +6,7 @@
 	<name>User Manager Core</name>
 	<description>User Manager Core</description>
     
-    <parent>
+	<parent>
 		<groupId>uk.co.revsys.user-manager</groupId>
 		<artifactId>user-manager-parent</artifactId>
 		<version>0.1.0-SNAPSHOT</version>
@@ -50,6 +50,12 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>uk.co.revsys.utils</groupId>
+			<artifactId>http-utils</artifactId>
+			<version>0.1.0-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 			<version>5.1.0.Final</version>
@@ -78,6 +84,12 @@
 			<artifactId>easymock</artifactId>
 			<version>3.1</version>
 			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.3.3</version>
 		</dependency>
 	</dependencies>
 
