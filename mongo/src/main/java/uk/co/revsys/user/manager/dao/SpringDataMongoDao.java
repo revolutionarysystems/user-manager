@@ -1,4 +1,4 @@
-package uk.co.revsys.user.manager.dao.mongo;
+package uk.co.revsys.user.manager.dao;
 
 import java.util.List;
 import java.util.Map;

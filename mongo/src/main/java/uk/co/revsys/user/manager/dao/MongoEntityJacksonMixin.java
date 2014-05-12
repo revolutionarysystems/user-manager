@@ -1,4 +1,4 @@
-package uk.co.revsys.user.manager.dao.mongo;
+package uk.co.revsys.user.manager.dao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

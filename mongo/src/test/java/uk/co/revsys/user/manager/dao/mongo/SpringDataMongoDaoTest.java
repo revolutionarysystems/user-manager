@@ -1,6 +1,6 @@
 package uk.co.revsys.user.manager.dao.mongo;
 
-import uk.co.revsys.user.manager.dao.mongo.SpringDataMongoDao;
+import uk.co.revsys.user.manager.dao.SpringDataMongoDao;
 import com.github.fakemongo.Fongo;
 import com.mongodb.MongoClient;
 import java.util.HashMap;

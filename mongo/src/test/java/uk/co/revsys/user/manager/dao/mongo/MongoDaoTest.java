@@ -1,7 +1,7 @@
 
 package uk.co.revsys.user.manager.dao.mongo;
 
-import uk.co.revsys.user.manager.dao.mongo.MongoDao;
+import uk.co.revsys.user.manager.dao.MongoDao;
 import com.github.fakemongo.Fongo;
 import com.mongodb.MongoClient;
 import java.util.HashMap;

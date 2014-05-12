@@ -1,4 +1,4 @@
-package uk.co.revsys.user.manager.dao.mongo;
+package uk.co.revsys.user.manager.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
