@@ -10,7 +10,7 @@ public class Account extends AbstractEntity{
 	@NotNull
 	private String name;
 	@NotNull
-	private Status status;
+	private Status status = Status.enabled;
 	private List<Application> applications = new ArrayList<Application>();
 	private Map<String, Object> attributes;
 

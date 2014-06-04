@@ -11,9 +11,12 @@
 	<name>User Manager - Parent POM</name>
 
 	<modules>
+        <module>model</module>
 		<module>core</module>
 		<module>mongo</module>
 		<module>service</module>
+        <module>client-java</module>
+        <module>client-osgi</module>
 	</modules>
 
 	<properties>

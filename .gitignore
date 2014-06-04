@@ -2,3 +2,6 @@
 /mongo/target
 /core/target
 /target/
+/client-java/target/
+/client-osgi/target/
+/model/target/

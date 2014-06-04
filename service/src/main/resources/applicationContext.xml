@@ -20,6 +20,7 @@
 				</bean>
 				<bean class="uk.co.revsys.user.manager.service.rest.AccountRestService">
 					<constructor-arg index="0" ref="accountService"/>
+                    <constructor-arg index="1" ref="userService"/>
 				</bean>
 				<bean class="uk.co.revsys.user.manager.service.rest.ApplicationRestService">
 					<constructor-arg index="0" ref="applicationService"/>

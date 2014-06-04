@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+           xmlns:camel="http://camel.apache.org/schema/blueprint"
+           xsi:schemaLocation="
+       http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+       http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.0.0.xsd
+       http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd">
+
+    <camelContext xmlns="http://camel.apache.org/schema/blueprint">
+
+        <dataFormats>
+            <json id="account" library="Jackson" unmarshalTypeName="uk.co.revsys.user.manager.model.Account"/>
+        </dataFormats>
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.account.create"/>
+            <unmarshal ref="accountDataFormat"/>
+            <to uri="bean:accountClient?method=create('master-user', 'changeme123', ${body})" />
+            <marshal ref="accountDataFormat"/>
+        </route>
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.account.createWithUser"/>
+            <setBody><simple>${header.account}</simple></setBody>
+            <unmarshal ref="accountDataFormat"/>
+            <setProperty propertyName="account"><simple>${body}</simple></setProperty>
+            <setBody><simple>${header.user}</simple></setBody>
+            <unmarshal ref="userDataFormat"/>
+            <setProperty propertyName="user"><simple>${body}</simple></setProperty>
+            <to uri="bean:accountClient?method=createWithUser('master-user', 'changeme123', ${property.account}, ${property.user})" />
+            <marshal ref="accountDataFormat"/>
+        </route>
+
+    </camelContext>
+    
+    <bean id="accountClient" class="uk.co.revsys.user.manager.client.AccountClient">
+        <argument ref="httpClient"/>
+        <argument value="http://localhost:8080/user-manager-service"/>
+    </bean>
+    
+    <bean id="httpClient" class="uk.co.revsys.utils.http.HttpClientImpl"/>
+    
+    <bean id="accountDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat"> 
+        <argument ref="objectMapper"/>
+        <argument type="java.lang.Class" value="uk.co.revsys.user.manager.model.Account"/> 
+    </bean>
+    
+    <bean id="userDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat"> 
+        <argument ref="objectMapper"/>
+        <argument type="java.lang.Class" value="uk.co.revsys.user.manager.model.User"/> 
+    </bean> 
+    
+    <bean id="objectMapper" class="uk.co.revsys.utils.jackson.LenientObjectMapper"/>
+
+</blueprint>

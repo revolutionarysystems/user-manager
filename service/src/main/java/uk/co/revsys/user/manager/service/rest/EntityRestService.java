@@ -1,6 +1,7 @@
 package uk.co.revsys.user.manager.service.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
@@ -34,6 +35,7 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 	public EntityRestService(S service) {
 		this.service = service;
 		this.objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		objectMapper.addMixInAnnotations(User.class, UserJacksonMixin.class);
 	}
 	
@@ -53,6 +55,7 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response create(String json){
+        System.out.println("json = " + json);
 		try {
 			E entity = objectMapper.readValue(json, getEntityType());
 			if(!isAuthorisedToCreate(entity)){
@@ -61,13 +64,14 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 			entity = service.create(entity);
 			return Response.ok(toJSONString(entity)).build();
 		} catch (IOException ex) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
 		} catch (DAOException ex) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
 		} catch (DuplicateKeyException ex) {
-			return Response.status(Response.Status.CONFLICT).build();
+			return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
 		} catch (ConstraintViolationException ex) {
-			return Response.status(Response.Status.BAD_REQUEST).build();
+            ex.printStackTrace();
+			return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
 		}
 	}
 
@@ -156,6 +160,10 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 	protected S getService() {
 		return service;
 	}
+
+    protected ObjectMapper getObjectMapper() {
+        return objectMapper;
+    }
 
 	protected String toJSONString(Object o) throws JsonProcessingException {
 		return objectMapper.writeValueAsString(o);

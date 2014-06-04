@@ -17,7 +17,7 @@ public class User extends AbstractEntity{
 	@NotNull
 	private String passwordSalt;
 	@NotNull
-	private Status status;
+	private Status status = Status.enabled;
 	private Map<String, Object> attributes = new HashMap<String, Object>();
 	@NotNull
 	private String account;

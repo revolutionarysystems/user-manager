@@ -54,13 +54,11 @@ public class SpringDataMongoDaoTest {
 		SpringDataMongoDao<Account> mongoDao = new SpringDataMongoDao<Account>(validator, new MongoTemplate(mongoClient, "user-manager"), Account.class);
 		Account account1 = new Account();
 		account1.setName("Test Account");
+        account1.setStatus(null);
 		try {
 			mongoDao.create(account1);
 			fail();
 		} catch (ConstraintViolationException ex) {
-			System.out.println(ex.getConstraintViolations().iterator().next());
-			System.out.println(ex.getConstraintViolations().iterator().next().getMessageTemplate());
-			System.out.println(ex.getConstraintViolations().iterator().next().getPropertyPath().getClass());
 			// Pass
 		}
 		account1.setStatus(Status.enabled);
