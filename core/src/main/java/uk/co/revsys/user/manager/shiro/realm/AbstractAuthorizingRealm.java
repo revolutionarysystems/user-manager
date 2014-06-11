@@ -45,16 +45,18 @@ public abstract class AbstractAuthorizingRealm extends AuthorizingRealm {
 
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken at) throws AuthenticationException {
+        System.out.println("doGetAuthenticationInfo");
 		try {
 			if (!(at instanceof UsernamePasswordToken)) {
 				return null;
 			}
 			UsernamePasswordToken token = (UsernamePasswordToken) at;
-			User user = getUser(token);
+            AuthenticationDetails authenticationDetails = getAuthenticationDetails(token);
+			User user = authenticationDetails.getUser();
 			if (user == null || user.getStatus().equals(Status.disabled)) {
 				return null;
 			}
-			Account account = getAccount(user.getAccount());
+			Account account = authenticationDetails.getAccount();
 			if (account == null || account.getStatus().equals(Status.disabled)) {
 				return null;
 			}
@@ -75,10 +77,8 @@ public abstract class AbstractAuthorizingRealm extends AuthorizingRealm {
 			throw new AuthenticationException(ex);
 		}
 	}
-
-	protected abstract Account getAccount(String accountId) throws RealmException;
-
-	protected abstract User getUser(UsernamePasswordToken token) throws RealmException;
+    
+    protected abstract AuthenticationDetails getAuthenticationDetails(UsernamePasswordToken token) throws RealmException;
 
 	protected abstract User getUser(String userId) throws RealmException;
 

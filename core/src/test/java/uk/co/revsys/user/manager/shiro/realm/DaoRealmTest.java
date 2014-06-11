@@ -121,9 +121,11 @@ public class DaoRealmTest {
 	public void testDoGetAuthenticationInfo_UserDisabled() throws Exception {
 		User user = new User();
 		user.setId("user1");
+        user.setAccount("1234");
 		user.setStatus(Status.disabled);
 		user.setPassword("password123");
 		expect(mockUserService.findOne(isA(Map.class))).andReturn(user);
+        expect(mockAccountService.findById("1234")).andReturn(null);
 		mocksControl.replay();
 		AuthenticationInfo result = daoRealm.doGetAuthenticationInfo(new UsernamePasswordToken("testuser", "password123"));
 		assertNull(result);

@@ -17,6 +17,7 @@
 			<set>
 				<bean class="uk.co.revsys.user.manager.service.rest.LoginRestService">
 					<constructor-arg index="0" ref="userService"/>
+                    <constructor-arg index="1" ref="accountService"/>
 				</bean>
 				<bean class="uk.co.revsys.user.manager.service.rest.AccountRestService">
 					<constructor-arg index="0" ref="accountService"/>
