@@ -41,6 +41,12 @@
             <artifactId>spring-core</artifactId>
             <version>${spring-version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
 		
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -53,6 +59,12 @@
             <artifactId>shiro-web</artifactId>
             <version>${shiro.version}</version>
         </dependency>
+        
+        <dependency>
+			<groupId>org.apache.shiro</groupId>
+			<artifactId>shiro-spring</artifactId>
+			<version>${shiro.version}</version>
+		</dependency>
 		
         <dependency>
             <groupId>uk.co.revsys.utils</groupId>

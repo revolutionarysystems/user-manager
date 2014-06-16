@@ -1,4 +1,4 @@
-package uk.co.revsys.user.manager.service.rest;
+package uk.co.revsys.user.manager.jackson;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

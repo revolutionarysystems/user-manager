@@ -1,5 +1,6 @@
 package uk.co.revsys.user.manager.service.rest;
 
+import uk.co.revsys.user.manager.jackson.UserJacksonMixin;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
