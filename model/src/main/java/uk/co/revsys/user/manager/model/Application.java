@@ -12,6 +12,7 @@ public class Application extends AbstractEntity{
 	private String name;
 	@NotNull
 	private String description;
+    private List<String> permissions = new ArrayList<String>();
 	private List<String> roles = new ArrayList<String>();
 	private Map<String, Object> attributes = new HashMap<String, Object>();
 
@@ -38,6 +39,14 @@ public class Application extends AbstractEntity{
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
+
+    public List<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<String> permissions) {
+        this.permissions = permissions;
+    }
 
 	public List<String> getRoles() {
 		return roles;

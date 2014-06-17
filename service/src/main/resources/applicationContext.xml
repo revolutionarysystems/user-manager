@@ -106,5 +106,26 @@
 	</bean>
 	
 	<bean id="passwordService" class="org.apache.shiro.authc.credential.DefaultPasswordService"></bean>
+    
+    <bean id="applicationConfigurationProvider" class="uk.co.revsys.resource.repository.provider.ResourceProvider">
+        <constructor-arg index="0" ref="applicationConfigurationRepository"/>
+        <constructor-arg index="1" value="."/>
+        <constructor-arg index="2" ref="applicationConfigurationLoader"/>
+    </bean>
+    
+    <bean id="applicationConfigurationRepository" class="uk.co.revsys.resource.repository.classpath.ClasspathResourceRepository">
+        <constructor-arg index="0" value="applications"/>
+    </bean>
+    
+    <bean id="applicationConfigurationLoader" class="uk.co.revsys.user.manager.service.ApplicationConfigurationLoader">
+        <constructor-arg index="0" ref="applicationService"/>
+        <constructor-arg index="1" ref="roleService"/>
+        <constructor-arg index="2" ref="permissionService"/>
+    </bean>
+    
+    <bean id="loadApplicationConfiguration" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="applicationConfigurationProvider"/>
+        <property name="targetMethod" value="refresh"/>
+    </bean>
 	
 </beans>

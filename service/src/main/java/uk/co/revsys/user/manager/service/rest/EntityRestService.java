@@ -21,6 +21,8 @@ import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import net.sf.json.util.PropertyFilter;
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.service.EntityService;
@@ -30,6 +32,8 @@ import uk.co.revsys.user.manager.service.Constants;
 
 public abstract class EntityRestService<E extends AbstractEntity, S extends EntityService<E>> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntityRestService.class);
+    
 	private final S service;
 	private final ObjectMapper objectMapper;
 
@@ -56,7 +60,6 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response create(String json){
-        System.out.println("json = " + json);
 		try {
 			E entity = objectMapper.readValue(json, getEntityType());
 			if(!isAuthorisedToCreate(entity)){
