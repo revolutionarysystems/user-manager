@@ -31,7 +31,15 @@ public class EntityClientImpl<E extends AbstractEntity> implements EntityClient<
     
     @Override
     public E create(String username, String password, E entity) throws IOException {
-        HttpRequest request = HttpRequest.POST(baseUrl + "/" + entityType, "application/json", new ByteArrayInputStream(objectMapper.writeValueAsBytes(entity)));
+        String json = objectMapper.writeValueAsString(entity);
+        String result = createRaw(username, password, json);
+        entity = objectMapper.readValue(result, entityClass);
+        return entity;
+    }
+
+    @Override
+    public String createRaw(String username, String password, String json) throws IOException {
+        HttpRequest request = HttpRequest.POST(baseUrl + "/" + entityType, "application/json", new ByteArrayInputStream(json.getBytes()));
         request.setCredentials(new BasicAuthCredentials(username, password));
         HttpResponse response = httpClient.invoke(request);
         if(response.getStatusCode()!=200){
@@ -42,8 +50,7 @@ public class EntityClientImpl<E extends AbstractEntity> implements EntityClient<
             }
             throw new IOException("Server returned status " + response.getStatusCode());
         }
-        entity = objectMapper.readValue(response.getInputStream(), entityClass);
-        return entity;
+        return IOUtils.toString(response.getInputStream());
     }
 
 }

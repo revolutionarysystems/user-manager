@@ -11,28 +11,10 @@
     <cm:property-placeholder id="blueprint.placeholder" persistent-id="service_usermanager" />
     
     <camelContext xmlns="http://camel.apache.org/schema/blueprint">
-
-        <dataFormats>
-            <json id="account" library="Jackson" unmarshalTypeName="uk.co.revsys.user.manager.model.Account"/>
-        </dataFormats>
         
         <route>
             <from uri="direct-vm://esb.service.usermanager.account.create"/>
-            <unmarshal ref="accountDataFormat"/>
-            <to uri="bean:accountClient?method=create('master-user', 'changeme123', ${body})" />
-            <marshal ref="accountDataFormat"/>
-        </route>
-        
-        <route>
-            <from uri="direct-vm://esb.service.usermanager.account.createWithUser"/>
-            <setBody><simple>${header.account}</simple></setBody>
-            <unmarshal ref="accountDataFormat"/>
-            <setProperty propertyName="account"><simple>${body}</simple></setProperty>
-            <setBody><simple>${header.user}</simple></setBody>
-            <unmarshal ref="userDataFormat"/>
-            <setProperty propertyName="user"><simple>${body}</simple></setProperty>
-            <to uri="bean:accountClient?method=createWithUser('master-user', 'changeme123', ${property.account}, ${property.user})" />
-            <marshal ref="accountDataFormat"/>
+            <to uri="bean:accountClient?method=createRaw('master-user', 'changeme123', ${body})" />
         </route>
 
     </camelContext>
@@ -43,17 +25,5 @@
     </bean>
     
     <bean id="httpClient" class="uk.co.revsys.utils.http.HttpClientImpl"/>
-    
-    <bean id="accountDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat"> 
-        <argument ref="objectMapper"/>
-        <argument type="java.lang.Class" value="uk.co.revsys.user.manager.model.Account"/> 
-    </bean>
-    
-    <bean id="userDataFormat" class="org.apache.camel.component.jackson.JacksonDataFormat"> 
-        <argument ref="objectMapper"/>
-        <argument type="java.lang.Class" value="uk.co.revsys.user.manager.model.User"/> 
-    </bean> 
-    
-    <bean id="objectMapper" class="uk.co.revsys.utils.jackson.LenientObjectMapper"/>
 
 </blueprint>

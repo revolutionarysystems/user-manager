@@ -7,4 +7,6 @@ public interface EntityClient<E extends AbstractEntity> {
 
     public E create(String username, String password, E entity) throws IOException;
     
+    public String createRaw(String username, String password, String json) throws IOException;
+    
 }

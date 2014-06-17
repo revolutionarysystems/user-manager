@@ -11,7 +11,7 @@ public class Account extends AbstractEntity{
 	private String name;
 	@NotNull
 	private Status status = Status.enabled;
-	private List<Application> applications = new ArrayList<Application>();
+	private List<String> applications = new ArrayList<String>();
 	private Map<String, Object> attributes;
 
 	public String getName() {
@@ -30,13 +30,13 @@ public class Account extends AbstractEntity{
 		this.status = status;
 	}
 
-	public List<Application> getApplications() {
-		return applications;
-	}
+    public List<String> getApplications() {
+        return applications;
+    }
 
-	public void setApplications(List<Application> applications) {
-		this.applications = applications;
-	}
+    public void setApplications(List<String> applications) {
+        this.applications = applications;
+    }
 
 	public Map<String, Object> getAttributes() {
 		return attributes;
