@@ -48,7 +48,7 @@ public class ServiceInitializer implements ServletContextListener{
 			}
 			if(userService.findById(masterUserId) == null){
 				User user = new User();
-				user.setId(masterUserId);
+                user.setId(masterUserId);
 				user.setAccount(masterAccountId);
 				user.setName("Master User");
 				user.setUsername(masterUserId);

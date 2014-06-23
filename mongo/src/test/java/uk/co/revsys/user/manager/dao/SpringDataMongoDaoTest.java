@@ -1,13 +1,13 @@
-package uk.co.revsys.user.manager.dao.mongo;
+package uk.co.revsys.user.manager.dao;
 
-import uk.co.revsys.user.manager.dao.SpringDataMongoDao;
 import com.github.fakemongo.Fongo;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -18,11 +18,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.Account;
 import uk.co.revsys.user.manager.model.Status;
+import uk.co.revsys.user.manager.model.User;
 
 public class SpringDataMongoDaoTest {
 

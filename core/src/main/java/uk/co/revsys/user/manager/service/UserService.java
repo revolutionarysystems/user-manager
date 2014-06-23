@@ -2,8 +2,10 @@ package uk.co.revsys.user.manager.service;
 
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -38,6 +40,11 @@ public class UserService extends EntityServiceImpl<User>{
 			violations.add(violation);
 			throw new ConstraintViolationException(violations);
 		}
+        Map nameFilter = new HashMap();
+        nameFilter.put("username", entity.getUsername());
+        if(findOne(nameFilter) != null){
+            throw new DuplicateKeyException("A user with username " + entity.getUsername() + " already exists");
+        }
 		Hash hash = passwordService.hashPassword(password);
 		String hashedPassword = hash.toBase64();
 		entity.setPassword(hashedPassword);
