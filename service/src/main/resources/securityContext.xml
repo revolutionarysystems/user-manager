@@ -85,8 +85,6 @@
 		<property name="securityManager" ref="securityManager"/>
 	</bean>
     
-    <bean id="formAuthenticationFilter" class="uk.co.revsys.user.manager.filter.FormAuthenticationFilter">
-        <property name="successUrl" value="/dashboard"/>
-    </bean>
+    <bean id="formAuthenticationFilter" class="uk.co.revsys.user.manager.filter.FormAuthenticationFilter"/>
 
 </beans>
