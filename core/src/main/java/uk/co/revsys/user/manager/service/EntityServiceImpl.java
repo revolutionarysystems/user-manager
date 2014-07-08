@@ -41,10 +41,20 @@ public class EntityServiceImpl<E extends AbstractEntity> implements EntityServic
 		dao.delete(id);
 	}
 
+    @Override
+    public List<E> find(String key, Object value) throws DAOException {
+        return dao.find(key, value);
+    }
+
 	@Override
 	public List<E> find(Map<String, Object> filters) throws DAOException {
 		return dao.find(filters);
 	}
+
+    @Override
+    public E findOne(String key, Object value) throws DAOException {
+        return dao.findOne(key, value);
+    }
 
 	@Override
 	public E findOne(Map<String, Object> filters) throws DAOException {

@@ -56,10 +56,24 @@ public class SpringDataMongoDao<E extends AbstractEntity> extends ValidatingEnti
 		}
 	}
 
+    @Override
+    public List<E> find(String key, Object value) throws DAOException {
+        Query query = new Query();
+        query.addCriteria(new Criteria(key).is(value));
+        return (List<E>) mongoOps.find(query, entityType);
+    }
+
 	@Override
 	public List<E> find(Map<String, Object> filters) throws DAOException {
 		return (List<E>) mongoOps.find(convertMapToQuery(filters), entityType);
 	}
+
+    @Override
+    public E findOne(String key, Object value) throws DAOException {
+        Query query = new Query();
+        query.addCriteria(new Criteria(key).is(value));
+        return (E) mongoOps.findOne(query, entityType);
+    }
 
 	@Override
 	public E findOne(Map<String, Object> filters) throws DAOException {

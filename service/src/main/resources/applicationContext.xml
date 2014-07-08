@@ -47,8 +47,9 @@
 		</property>
 	</bean>
 	
-	<bean id="accountService" class="uk.co.revsys.user.manager.service.EntityServiceImpl">
+	<bean id="accountService" class="uk.co.revsys.user.manager.service.AccountService">
 		<constructor-arg index="0" ref="accountDao"/>
+        <constructor-arg index="1" ref="userService"/>
 	</bean>
 	
 	<bean id="userService" class="uk.co.revsys.user.manager.service.UserService">

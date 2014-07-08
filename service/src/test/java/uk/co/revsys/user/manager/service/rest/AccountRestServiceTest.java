@@ -16,6 +16,7 @@ import static org.easymock.EasyMock.*;
 import uk.co.revsys.user.manager.model.Account;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.AbstractShiroTest;
+import uk.co.revsys.user.manager.service.AccountService;
 import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.service.UserService;
 
@@ -23,7 +24,7 @@ public class AccountRestServiceTest extends AbstractShiroTest {
 
     IMocksControl mocksControl;
     Subject mockSubject;
-    EntityService<Account> mockAccountService;
+    AccountService mockAccountService;
     UserService mockUserService;
     AccountRestService accountRestService;
 
@@ -43,7 +44,7 @@ public class AccountRestServiceTest extends AbstractShiroTest {
         mocksControl = EasyMock.createControl();
         mockSubject = mocksControl.createMock(Subject.class);
         setSubject(mockSubject);
-        mockAccountService = mocksControl.createMock(EntityService.class);
+        mockAccountService = mocksControl.createMock(AccountService.class);
         mockUserService = mocksControl.createMock(UserService.class);
         accountRestService = new AccountRestService(mockAccountService, mockUserService);
     }

@@ -18,9 +18,13 @@ public interface EntityDao<E extends AbstractEntity> {
 	public E update(E entity) throws DAOException, ConstraintViolationException;
 	
 	public void delete(String id) throws DAOException;
+    
+    public List<E> find(String key, Object value) throws DAOException;
 	
 	public List<E> find(Map<String, Object> filters) throws DAOException;
 	
 	public E findOne(Map<String, Object> filters) throws DAOException;
+    
+    public E findOne(String key, Object value) throws DAOException;
 	
 }

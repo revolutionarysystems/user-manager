@@ -12,9 +12,16 @@
     
     <camelContext xmlns="http://camel.apache.org/schema/blueprint">
         
+        <!-- Accounts -->
+        
         <route>
             <from uri="direct-vm://esb.service.usermanager.account.create"/>
-            <to uri="bean:accountClient?method=createRaw('master-user', 'changeme123', ${body})" />
+            <to uri="bean:accountClient?method=createRaw(${header.username}, ${header.password}, ${body})" />
+        </route>
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.account.users"/>
+            <to uri="bean:accountClient?method=getUsersRaw(${header.username}, ${header.password}, ${header.accountId})" />
         </route>
 
     </camelContext>
