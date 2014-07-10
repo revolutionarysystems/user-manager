@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -40,15 +41,24 @@ public class LoginServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("LoginServlet.doPost");
         Subject subject = SecurityUtils.getSubject();
+        System.out.println("subject = " + subject);
+        System.out.println("subject = " + subject.isAuthenticated());
         String username = req.getParameter("username");
+        System.out.println("username = " + username);
         String password = req.getParameter("password");
+        System.out.println("password = " + password);
         try {
             subject.login(new UsernamePasswordToken(username, password));
+            System.out.println("success");
+            System.out.println("subject = " + subject.isAuthenticated());
             resp.sendRedirect(successUrl); 
         } catch (UnknownAccountException ex) {
+            ex.printStackTrace();
             resp.sendRedirect(loginUrl);
         } catch(IncorrectCredentialsException ex){
+            ex.printStackTrace();
             resp.sendRedirect(loginUrl);
         }
     }

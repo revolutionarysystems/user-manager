@@ -1,6 +1,5 @@
 package uk.co.revsys.user.manager.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import java.io.IOException;
@@ -14,9 +13,9 @@ public class AccountClient extends EntityClientImpl<Account>{
 
     EntityClient<User> userClient;
     
-    public AccountClient(HttpClient httpClient, String baseUrl) {
-        super(httpClient, baseUrl, "accounts", Account.class);
-        userClient = new EntityClientImpl<User>(httpClient, baseUrl, "users", User.class);
+    public AccountClient(HttpClient httpClient, String baseUrl, UserClient userClient) {
+        super(httpClient, baseUrl, Account.class);
+        this.userClient = userClient;
     }
     
     public Account createWithUser(Account account, User user) throws IOException {
@@ -46,7 +45,7 @@ public class AccountClient extends EntityClientImpl<Account>{
     }
     
     public String getUsersRaw(String username, String password, String accountId) throws IOException{
-        HttpRequest request = HttpRequest.GET(constructUrl("account", accountId, "users"));
+        HttpRequest request = HttpRequest.GET(constructUrl(accountId, "users"));
         return sendRequest(username, password, request);
     }
 

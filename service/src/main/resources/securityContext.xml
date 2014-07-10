@@ -22,29 +22,29 @@
 				#/admin/** = authc, roles[admin]
 				#/docs/** = authc, perms[document:read]
 				/login = noSessionCreation, formAuthenticationFilter
-				/applications/** = authcBasic, roles[user-manager:administrator]
-				/roles/** = authcBasic, roles[user-manager:administrator]
-				/permissions/** = authcBasic, roles[user-manager:administrator]
-				/**/all = authcBasic, roles[user-manager:administrator]
-				/** = authcBasic
+				/applications/** = noSessionCreation, authcBasic, roles[user-manager:administrator]
+				/roles/** = noSessionCreation, authcBasic, roles[user-manager:administrator]
+				/permissions/** = noSessionCreation, authcBasic, roles[user-manager:administrator]
+				/**/all = noSessionCreation, authcBasic, roles[user-manager:administrator]
+				/** = noSessionCreation, authcBasic
 			</value>
 		</property>
 	</bean>
 
 	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
 		<property name="realm" ref="daoRealm"/>
-        <!--property name="sessionManager" ref="sessionManager"/-->
+        <property name="sessionManager" ref="sessionManager"/>
 		<property name="subjectDAO" ref="subjectDAO" />
 	</bean>
     
-    <!--bean id="sessionManager"
+    <bean id="sessionManager"
 		  class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
 		<property name="sessionDAO" ref="sessionDAO" />
 	</bean>
     
-    <bean id="sessionDAO" class="com.osl.security.shiro.dao.DatabaseSessionDao">
-		<constructor-arg ref="dataSource"/>
-	</bean-->
+    <bean id="sessionDAO" class="uk.co.revsys.user.manager.shiro.dao.MongoSessionDao">
+		<constructor-arg ref="mongo"/>
+	</bean>
 
 	<bean id="subjectDAO" class="org.apache.shiro.mgt.DefaultSubjectDAO">
 		<property name="sessionStorageEvaluator" ref="sessionStorageEvaluator"/>

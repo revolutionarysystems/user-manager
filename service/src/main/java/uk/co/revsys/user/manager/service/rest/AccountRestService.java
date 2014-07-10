@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -67,6 +68,7 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
         }
     }
 
+    @GET
     @Path("/{id}/users")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getUsers(@PathParam("id") String id) {

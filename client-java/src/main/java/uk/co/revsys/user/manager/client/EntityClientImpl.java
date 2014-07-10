@@ -15,14 +15,12 @@ import uk.co.revsys.utils.http.HttpResponse;
 public class EntityClientImpl<E extends AbstractEntity> implements EntityClient<E>{
 
     private final String baseUrl;
-    private final String entityType;
     private final Class<? extends E> entityClass;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
 
-    public EntityClientImpl(HttpClient httpClient, String baseUrl, String entityType, Class<? extends E> entityClass) {
+    public EntityClientImpl(HttpClient httpClient, String baseUrl, Class<? extends E> entityClass) {
         this.baseUrl = baseUrl;
-        this.entityType = entityType;
         this.objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         this.httpClient = httpClient;
@@ -49,20 +47,38 @@ public class EntityClientImpl<E extends AbstractEntity> implements EntityClient<
 
     @Override
     public String createRaw(String username, String password, String json) throws IOException {
-        HttpRequest request = HttpRequest.POST(constructUrl(entityType), "application/json", new ByteArrayInputStream(json.getBytes()));
+        HttpRequest request = HttpRequest.POST(baseUrl, "application/json", new ByteArrayInputStream(json.getBytes()));
+        return sendRequest(username, password, request);
+    }
+
+    @Override
+    public E findById(String id) throws IOException {
+        return findById(UserManager.getUsername(), UserManager.getPassword(), id);
+    }
+
+    @Override
+    public E findById(String username, String password, String id) throws IOException {
+        String result = findByIdRaw(username, password, id);
+        return objectMapper.readValue(result, entityClass);
+    }
+
+    @Override
+    public String findByIdRaw(String id) throws IOException {
+        return findByIdRaw(UserManager.getUsername(), UserManager.getPassword(), id);
+    }
+
+    @Override
+    public String findByIdRaw(String username, String password, String id) throws IOException {
+        HttpRequest request = HttpRequest.GET(constructUrl(id));
         return sendRequest(username, password, request);
     }
     
-    protected String constructUrl(String type, String id, String path){
-        return constructUrl(type, id) + "/" + path;
+    protected String constructUrl(String id, String path){
+        return constructUrl(id) + "/" + path;
     }
     
-    protected String constructUrl(String type, String id){
-        return constructUrl(type) + "/" + id;
-    }
-    
-    protected String constructUrl(String type){
-        return baseUrl + "/" + type;
+    protected String constructUrl(String id){
+        return baseUrl + "/" + id;
     }
     
     protected String sendRequest(String username, String password, HttpRequest request) throws IOException{

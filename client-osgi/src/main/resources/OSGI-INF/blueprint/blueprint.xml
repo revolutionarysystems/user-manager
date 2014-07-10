@@ -12,6 +12,13 @@
     
     <camelContext xmlns="http://camel.apache.org/schema/blueprint">
         
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.proxy"/>
+            <recipientList>
+				<simple>{{service.endpoint}}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
+        
         <!-- Accounts -->
         
         <route>
@@ -20,15 +27,33 @@
         </route>
         
         <route>
+            <from uri="direct-vm://esb.service.usermanager.account"/>
+            <to uri="bean:accountClient?method=findByIdRaw(${header.username}, ${header.password}, ${header.accountId})" />
+        </route>
+        
+        <route>
             <from uri="direct-vm://esb.service.usermanager.account.users"/>
             <to uri="bean:accountClient?method=getUsersRaw(${header.username}, ${header.password}, ${header.accountId})" />
+        </route>
+        
+        <!-- Users -->
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.user"/>
+            <to uri="bean:userClient?method=findByIdRaw(${header.username}, ${header.password}, ${header.userId})" />
         </route>
 
     </camelContext>
     
     <bean id="accountClient" class="uk.co.revsys.user.manager.client.AccountClient">
         <argument ref="httpClient"/>
-        <argument value="${service.endpoint}"/>
+        <argument value="${service.endpoint}/accounts"/>
+        <argument ref="userClient"/>
+    </bean>
+    
+    <bean id="userClient" class="uk.co.revsys.user.manager.client.UserClient">
+        <argument ref="httpClient"/>
+        <argument value="${service.endpoint}/users"/>
     </bean>
     
     <bean id="httpClient" class="uk.co.revsys.utils.http.HttpClientImpl"/>

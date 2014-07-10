@@ -13,4 +13,12 @@ public interface EntityClient<E extends AbstractEntity> {
     
     public String createRaw(String username, String password, String json) throws IOException;
     
+    public E findById(String id) throws IOException;
+    
+    public E findById(String username, String password, String id) throws IOException;
+    
+    public String findByIdRaw(String id) throws IOException;
+    
+    public String findByIdRaw(String username, String password, String id) throws IOException;
+    
 }

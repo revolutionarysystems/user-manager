@@ -1,12 +1,13 @@
 package uk.co.revsys.user.manager.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 
-public class User extends AbstractEntity {
+public class User extends AbstractEntity{
     
     @NotNull
     private String name;

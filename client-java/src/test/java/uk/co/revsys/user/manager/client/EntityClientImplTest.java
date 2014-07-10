@@ -45,7 +45,7 @@ public class EntityClientImplTest {
         IMocksControl mocksControl = EasyMock.createControl();
         //HttpClient httpClient = new HttpClientImpl();
         HttpClient httpClient = mocksControl.createMock(HttpClient.class);
-        EntityClient<Account> accountClient = new EntityClientImpl(httpClient, "http://localhost:8080/user-manager-service", "accounts", Account.class);
+        EntityClient<Account> accountClient = new EntityClientImpl(httpClient, "http://localhost:8080/user-manager-service", Account.class);
         String username = "master-user";
         String password = "changeme123";
         Account account = new Account();

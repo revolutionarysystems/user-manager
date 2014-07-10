@@ -56,6 +56,7 @@ public class ServiceInitializer implements ServletContextListener{
 				user.setStatus(Status.enabled);
 				List<String> roles = new ArrayList<String>();
 				roles.add(masterUserRoleId);
+                roles.add(accountOwnerRoleId);
 				user.setRoles(roles);
 				userService.create(user);
 			}

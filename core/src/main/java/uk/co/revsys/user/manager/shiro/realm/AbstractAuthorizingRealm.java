@@ -31,7 +31,11 @@ public abstract class AbstractAuthorizingRealm extends AuthorizingRealm {
 			String userId = (String) pc.getPrimaryPrincipal();
 			User user = getUser(userId);
 			SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
-			for (Role role : getRoles(user)) {
+            List<Role> roles = getRoles(user);
+            System.out.println("roles = " + roles);
+			for (Role role : roles) {
+                System.out.println("role = " + role);
+                System.out.println("role = " + role.getName());
 				authorizationInfo.addRole(role.getName());
 			}
 			for (Permission permission : getPermissions(user)) {

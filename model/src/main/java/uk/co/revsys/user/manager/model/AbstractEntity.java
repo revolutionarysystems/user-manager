@@ -1,6 +1,8 @@
 package uk.co.revsys.user.manager.model;
 
-public abstract class AbstractEntity {
+import java.io.Serializable;
+
+public abstract class AbstractEntity implements Serializable{
 	
 	private String id;
 
