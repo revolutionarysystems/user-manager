@@ -1,18 +1,13 @@
 package uk.co.revsys.user.manager.service;
 
-import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import javax.validation.ConstraintViolation;
+import java.util.UUID;
 import javax.validation.ConstraintViolationException;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.crypto.hash.Hash;
-import org.hibernate.validator.internal.engine.ConstraintViolationImpl;
-import org.hibernate.validator.internal.engine.path.PathImpl;
 import uk.co.revsys.user.manager.dao.EntityDao;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
@@ -33,18 +28,15 @@ public class UserService extends EntityServiceImpl<User>{
 
 	@Override
 	public User create(User entity) throws DAOException, DuplicateKeyException, ConstraintViolationException {
-		String password = entity.getPassword();
-		if(password == null){
-			ConstraintViolation<User> violation = ConstraintViolationImpl.forBeanValidation("{javax.validation.constraints.NotNull.message}", "may not be null", User.class, entity, null, null, PathImpl.createPathFromString("password"), null, ElementType.TYPE);
-			Set<ConstraintViolation<User>> violations = new HashSet<ConstraintViolation<User>>();
-			violations.add(violation);
-			throw new ConstraintViolationException(violations);
-		}
         Map nameFilter = new HashMap();
         nameFilter.put("username", entity.getUsername());
         if(findOne(nameFilter) != null){
             throw new DuplicateKeyException("A user with username " + entity.getUsername() + " already exists");
         }
+        String password = entity.getPassword();
+		if(password == null || password.isEmpty()){
+			password = UUID.randomUUID().toString();
+		}
 		Hash hash = passwordService.hashPassword(password);
 		String hashedPassword = hash.toBase64();
 		entity.setPassword(hashedPassword);
