@@ -77,7 +77,7 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             if (account == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             } else {
-                if (isOwner(account)) {
+                if (isOwner(account) || isAdministrator()) {
                     List<User> users = getService().getUsers(account);
                     return Response.status(Response.Status.OK).entity(toJSONString(users)).build();
                 }else{

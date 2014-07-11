@@ -88,7 +88,7 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 			if(entity==null){
 				return Response.status(Response.Status.NOT_FOUND).build();
 			}
-			if(!isAuthorisedToFindById(entity)){
+            if(!isAuthorisedToFindById(entity)){
 				return Response.status(Response.Status.FORBIDDEN).build();
 			}
 			return Response.ok(toJSONString(entity)).build();

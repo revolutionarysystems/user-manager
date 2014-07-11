@@ -27,7 +27,7 @@ public class UserService extends EntityServiceImpl<User>{
 	}
 
 	@Override
-	public User create(User entity) throws DAOException, DuplicateKeyException, ConstraintViolationException {
+	public User create(User entity) throws DAOException, DuplicateKeyException {
         Map nameFilter = new HashMap();
         nameFilter.put("username", entity.getUsername());
         if(findOne(nameFilter) != null){
@@ -44,6 +44,12 @@ public class UserService extends EntityServiceImpl<User>{
 		entity.setPasswordSalt(salt);
 		return super.create(entity);
 	}
+    
+    public User resetPassword(User user) throws DAOException{
+        user.setPassword(UUID.randomUUID().toString());
+        user = getDao().update(user);
+        return user;
+    }
 
 	public List<Role> getRoles(User user) throws DAOException{
 		List<Role> roles = new ArrayList<Role>();
