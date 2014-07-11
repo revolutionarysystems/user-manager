@@ -32,7 +32,7 @@ public class EntityServiceImpl<E extends AbstractEntity> implements EntityServic
 	}
 
 	@Override
-	public E update(E entity) throws DAOException, ConstraintViolationException {
+	public E update(E entity) throws DAOException, DuplicateKeyException, ConstraintViolationException {
 		return dao.update(entity);
 	}
 

@@ -44,6 +44,17 @@ public class UserService extends EntityServiceImpl<User>{
 		entity.setPasswordSalt(salt);
 		return super.create(entity);
 	}
+
+    @Override
+    public User update(User user) throws DAOException, DuplicateKeyException, ConstraintViolationException {
+        Map nameFilter = new HashMap();
+        nameFilter.put("username", user.getUsername());
+        User existingUser = findOne(nameFilter);
+        if(existingUser != null && !existingUser.getId().equals(user.getId())){
+            throw new DuplicateKeyException("A user with username " + user.getUsername() + " already exists");
+        }
+        return super.update(user);
+    }
     
     public User resetPassword(User user) throws DAOException{
         user.setPassword(UUID.randomUUID().toString());

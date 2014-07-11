@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public abstract class UserJacksonMixin {
 
 	private String password;
-	@JsonIgnore
 	private String passwordSalt;
 
     @JsonIgnore
@@ -17,6 +16,16 @@ public abstract class UserJacksonMixin {
     @JsonProperty
     public void setPassword(String password) {
         this.password = password;
+    }
+    
+    @JsonIgnore
+    public String getPasswordSalt() {
+        return password;
+    }
+
+    @JsonProperty
+    public void setPasswordSalt(String passwordSalt) {
+        this.passwordSalt = passwordSalt;
     }
 	
 }

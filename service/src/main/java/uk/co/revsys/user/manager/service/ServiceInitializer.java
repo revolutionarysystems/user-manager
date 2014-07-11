@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
@@ -14,6 +16,8 @@ import uk.co.revsys.user.manager.model.User;
 
 public class ServiceInitializer implements ServletContextListener{
 	
+    private final Logger LOGGER = LoggerFactory.getLogger(ServiceInitializer.class);
+    
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
 		try {
@@ -61,9 +65,9 @@ public class ServiceInitializer implements ServletContextListener{
 				userService.create(user);
 			}
 		} catch (DAOException ex) {
-			throw new RuntimeException(ex);
+			LOGGER.error("Unable to setup default data", ex);
 		} catch(DuplicateKeyException ex){
-			throw new RuntimeException(ex);
+			LOGGER.error("Unable to setup default data", ex);
 		}
 	}
 

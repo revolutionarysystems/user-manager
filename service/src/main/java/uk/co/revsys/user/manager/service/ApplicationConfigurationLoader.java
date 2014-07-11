@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import javax.validation.ConstraintViolationException;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -44,6 +46,10 @@ public class ApplicationConfigurationLoader implements FilteringResourceHandler 
             createApplication(json);
         } catch (DAOException ex) {
             LOGGER.error("Unable to update application from configuration: " + resource.getName(), ex);
+        } catch (DuplicateKeyException ex) {
+            LOGGER.error("Unable to update application from configuration: " + resource.getName(), ex);
+        } catch(ConstraintViolationException ex){
+            LOGGER.error("Unable to update application from configuration: " + resource.getName(), ex);
         }
     }
 
@@ -52,7 +58,7 @@ public class ApplicationConfigurationLoader implements FilteringResourceHandler 
         return resource.getName().endsWith(".json");
     }
 
-    private void createApplication(JSONObject applicationJson) throws DAOException, IOException {
+    private void createApplication(JSONObject applicationJson) throws DAOException, IOException, DuplicateKeyException {
         String id = applicationJson.getString("id");
         Application application = new Application();
         application.setId(id);
@@ -84,7 +90,7 @@ public class ApplicationConfigurationLoader implements FilteringResourceHandler 
         }
     }
 
-    private void createRoles(JSONArray roles) throws DAOException {
+    private void createRoles(JSONArray roles) throws DAOException, DuplicateKeyException {
         for (int i = 0; i < roles.length(); i++) {
             JSONObject roleJson = roles.getJSONObject(i);
             String id = roleJson.getString("id");
@@ -110,7 +116,7 @@ public class ApplicationConfigurationLoader implements FilteringResourceHandler 
         }
     }
 
-    private void createPermissions(JSONArray permissions) throws DAOException {
+    private void createPermissions(JSONArray permissions) throws DAOException, DuplicateKeyException {
         for (int i = 0; i < permissions.length(); i++) {
             JSONObject permissionJson = permissions.getJSONObject(i);
             String id = permissionJson.getString("id");

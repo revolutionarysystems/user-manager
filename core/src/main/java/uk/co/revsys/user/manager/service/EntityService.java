@@ -15,7 +15,7 @@ public interface EntityService<E extends AbstractEntity> {
 	
 	public E findById(String id) throws DAOException;
 	
-	public E update(E entity) throws DAOException, ConstraintViolationException;
+	public E update(E entity) throws DAOException, DuplicateKeyException, ConstraintViolationException;
 	
 	public void delete(String id) throws DAOException;
     

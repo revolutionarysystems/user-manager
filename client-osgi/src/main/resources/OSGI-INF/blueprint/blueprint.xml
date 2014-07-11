@@ -27,20 +27,28 @@
         </route>
         
         <route>
-            <from uri="direct-vm://esb.service.usermanager.account"/>
-            <to uri="bean:accountClient?method=findByIdRaw(${header.username}, ${header.password}, ${header.accountId})" />
-        </route>
-        
-        <route>
             <from uri="direct-vm://esb.service.usermanager.account.users"/>
-            <to uri="bean:accountClient?method=getUsersRaw(${header.username}, ${header.password}, ${header.accountId})" />
+            <recipientList>
+				<simple>{{service.endpoint}}/accounts/${header.account}/users?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
         </route>
         
         <!-- Users -->
         
         <route>
-            <from uri="direct-vm://esb.service.usermanager.user"/>
-            <to uri="bean:userClient?method=findByIdRaw(${header.username}, ${header.password}, ${header.userId})" />
+            <from uri="direct-vm://esb.service.usermanager.user.update"/>
+            <setProperty propertyName="userId">
+                <method ref="jsonPath" method="evaluate(${body}, '$.id')"/>
+            </setProperty>
+            <setHeader headerName="CamelHttpMethod">
+                <constant>POST</constant>
+            </setHeader>
+            <setHeader headerName="Content-Type">
+                <constant>application/json</constant>
+            </setHeader>
+            <recipientList>
+				<simple>{{service.endpoint}}/users/${property.userId}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
         </route>
 
     </camelContext>
@@ -57,5 +65,7 @@
     </bean>
     
     <bean id="httpClient" class="uk.co.revsys.utils.http.HttpClientImpl"/>
+    
+    <bean id="jsonPath" class="uk.co.revsys.jsont.JSONPathEvaluator"/>
 
 </blueprint>
