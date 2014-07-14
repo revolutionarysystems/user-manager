@@ -27,22 +27,22 @@ public class UserService extends EntityServiceImpl<User>{
 	}
 
 	@Override
-	public User create(User entity) throws DAOException, DuplicateKeyException {
+	public User create(User user) throws DAOException, DuplicateKeyException {
         Map nameFilter = new HashMap();
-        nameFilter.put("username", entity.getUsername());
+        nameFilter.put("username", user.getUsername());
         if(findOne(nameFilter) != null){
-            throw new DuplicateKeyException("A user with username " + entity.getUsername() + " already exists");
+            throw new DuplicateKeyException("A user with username " + user.getUsername() + " already exists");
         }
-        String password = entity.getPassword();
+        String password = user.getPassword();
 		if(password == null || password.isEmpty()){
 			password = UUID.randomUUID().toString();
 		}
 		Hash hash = passwordService.hashPassword(password);
 		String hashedPassword = hash.toBase64();
-		entity.setPassword(hashedPassword);
+		user.setPassword(hashedPassword);
 		String salt = hash.getSalt().toBase64();
-		entity.setPasswordSalt(salt);
-		return super.create(entity);
+		user.setPasswordSalt(salt);
+		return super.create(user);
 	}
 
     @Override
@@ -60,6 +60,15 @@ public class UserService extends EntityServiceImpl<User>{
         user.setPassword(UUID.randomUUID().toString());
         user = getDao().update(user);
         return user;
+    }
+    
+    public User changePassword(User user, String password) throws DAOException, DuplicateKeyException{
+        Hash hash = passwordService.hashPassword(password);
+		String hashedPassword = hash.toBase64();
+		user.setPassword(hashedPassword);
+		String salt = hash.getSalt().toBase64();
+		user.setPasswordSalt(salt);
+        return update(user);
     }
 
 	public List<Role> getRoles(User user) throws DAOException{

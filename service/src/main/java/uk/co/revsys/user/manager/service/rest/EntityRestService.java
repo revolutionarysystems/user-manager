@@ -114,6 +114,9 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
         LOGGER.info("Updating " + id + ": " + json);
 		try {
 			E existingEntity = service.findById(id);
+            if(existingEntity==null){
+				return Response.status(Response.Status.NOT_FOUND).build();
+			}
 			if(!isAuthorisedToUpdate(existingEntity)){
 				return Response.status(Response.Status.FORBIDDEN).build();
 			}
@@ -131,10 +134,8 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 					return false;
 				}
 			});
-			if(existingEntity==null){
-				return Response.status(Response.Status.NOT_FOUND).build();
-			}
 			JSONObject existingJSON = JSONObject.fromObject(existingEntity, jsonConfig);
+            json = filter(new org.json.JSONObject(json), existingEntity).toString();
 			E newEntity = objectMapper.readValue(json, getEntityType());
 			JSONObject newJSON = JSONObject.fromObject(newEntity, jsonConfig);
 			existingJSON.putAll(newJSON);
@@ -204,6 +205,10 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 	protected boolean isAuthorisedToDelete(E e){
 		return true;
 	}
+    
+    protected org.json.JSONObject filter(org.json.JSONObject json, E entity){
+        return json;
+    }
 	
 	protected boolean isAdministrator(){
 		return SecurityUtils.getSubject().hasRole(Constants.ADMINISTRATOR_ROLE);

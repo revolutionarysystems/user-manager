@@ -50,6 +50,27 @@
 				<simple>{{service.endpoint}}/users/${property.userId}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
 			</recipientList>
         </route>
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.user.resetPassword"/>
+            <setHeader headerName="CamelHttpMethod">
+                <constant>POST</constant>
+            </setHeader>
+            <recipientList>
+				<simple>{{service.endpoint}}/users/${header.user}/resetPassword?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.user.changePassword"/>
+            <setHeader headerName="CamelHttpMethod">
+                <constant>POST</constant>
+            </setHeader>
+            <setHeader headerName="CamelHttpQuery"><simple>password=${header.password}</simple></setHeader>
+            <recipientList>
+				<simple>{{service.endpoint}}/users/${header.user}/changePassword?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
 
     </camelContext>
     
