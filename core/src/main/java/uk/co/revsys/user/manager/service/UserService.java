@@ -56,12 +56,6 @@ public class UserService extends EntityServiceImpl<User>{
         return super.update(user);
     }
     
-    public User resetPassword(User user) throws DAOException{
-        user.setPassword(UUID.randomUUID().toString());
-        user = getDao().update(user);
-        return user;
-    }
-    
     public User changePassword(User user, String password) throws DAOException, DuplicateKeyException{
         Hash hash = passwordService.hashPassword(password);
 		String hashedPassword = hash.toBase64();

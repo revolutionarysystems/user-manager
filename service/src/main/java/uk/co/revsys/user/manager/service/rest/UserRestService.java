@@ -72,28 +72,9 @@ public class UserRestService extends EntityRestService<User, UserService>{
 	}
     
     @POST
-    @Path("/{id}/resetPassword")
-    public Response resetPassword(@PathParam("id") String userId){
-        System.out.println("reset password");
-        try {
-            User user = getService().findById(userId);
-            if(user==null){
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-            if(!isAuthorisedToUpdate(user)){
-                return Response.status(Response.Status.FORBIDDEN).build();
-            }
-            getService().resetPassword(user);
-            return Response.status(Response.Status.NO_CONTENT).build();
-        } catch (DAOException ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
-        }
-    }
-    
-    @POST
     @Path("/{id}/changePassword")
     public Response changePassword(@PathParam("id") String userId, @FormParam("password") String password){
-        System.out.println("change password");
+        System.out.println("change password for " + userId + " to " + password);
         try {
             User user = getService().findById(userId);
             if(user==null){

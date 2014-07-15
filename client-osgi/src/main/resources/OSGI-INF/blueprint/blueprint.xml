@@ -23,7 +23,7 @@
         
         <route>
             <from uri="direct-vm://esb.service.usermanager.account.create"/>
-            <to uri="bean:accountClient?method=createRaw(${header.username}, ${header.password}, ${body})" />
+            <to uri="bean:accountClient?method=createRaw(${property.username}, ${property.password}, ${body})" />
         </route>
         
         <route>
@@ -34,6 +34,19 @@
         </route>
         
         <!-- Users -->
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.user.create"/>
+            <setHeader headerName="CamelHttpMethod">
+                <constant>POST</constant>
+            </setHeader>
+            <setHeader headerName="Content-Type">
+                <constant>application/json</constant>
+            </setHeader>
+            <recipientList>
+				<simple>{{service.endpoint}}/users?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
         
         <route>
             <from uri="direct-vm://esb.service.usermanager.user.update"/>
@@ -52,24 +65,23 @@
         </route>
         
         <route>
-            <from uri="direct-vm://esb.service.usermanager.user.resetPassword"/>
-            <setHeader headerName="CamelHttpMethod">
-                <constant>POST</constant>
-            </setHeader>
-            <recipientList>
-				<simple>{{service.endpoint}}/users/${header.user}/resetPassword?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
-			</recipientList>
-        </route>
-        
-        <route>
             <from uri="direct-vm://esb.service.usermanager.user.changePassword"/>
             <setHeader headerName="CamelHttpMethod">
                 <constant>POST</constant>
             </setHeader>
-            <setHeader headerName="CamelHttpQuery"><simple>password=${header.password}</simple></setHeader>
+            <setBody><simple>password=${header.password}</simple></setBody>
             <recipientList>
 				<simple>{{service.endpoint}}/users/${header.user}/changePassword?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
 			</recipientList>
+        </route>
+        
+        <!-- Utils -->
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.util.generatePassword"/>
+            <setHeader headerName="password">
+                <method ref="passwordGenerator" method="generate()"/>
+            </setHeader>
         </route>
 
     </camelContext>
@@ -88,5 +100,7 @@
     <bean id="httpClient" class="uk.co.revsys.utils.http.HttpClientImpl"/>
     
     <bean id="jsonPath" class="uk.co.revsys.jsont.JSONPathEvaluator"/>
+    
+    <bean id="passwordGenerator" class="uk.co.revsys.user.manager.client.PasswordGenerator"/>
 
 </blueprint>
