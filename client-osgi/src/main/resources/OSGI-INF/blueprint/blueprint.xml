@@ -36,6 +36,26 @@
         <!-- Users -->
         
         <route>
+            <from uri="direct-vm://esb.service.usermanager.me"/>
+            <setHeader headerName="CamelHttpMethod">
+                <constant>GET</constant>
+            </setHeader>
+            <recipientList>
+				<simple>{{service.endpoint}}/users/me?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.user"/>
+            <setHeader headerName="CamelHttpMethod">
+                <constant>GET</constant>
+            </setHeader>
+            <recipientList>
+				<simple>{{service.endpoint}}/users/{header.user}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
+        
+        <route>
             <from uri="direct-vm://esb.service.usermanager.user.create"/>
             <setHeader headerName="CamelHttpMethod">
                 <constant>POST</constant>

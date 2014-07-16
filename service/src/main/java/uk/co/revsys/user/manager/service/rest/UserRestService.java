@@ -10,6 +10,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -27,6 +28,25 @@ public class UserRestService extends EntityRestService<User, UserService>{
 
 	public UserRestService(UserService service) {
 		super(service);
+	}
+    
+    @GET
+    @Path("/me")
+	@Produces("application/json")
+	public Response me(){
+		try {
+			Subject subject = SecurityUtils.getSubject();
+			if(!subject.isAuthenticated()){
+				return Response.status(Response.Status.UNAUTHORIZED).build();
+			}
+			String userId = (String) subject.getPrincipal();
+			User user = getService().findById(userId);
+			return Response.ok(toJSONString(user)).build();
+		} catch (DAOException ex) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		} catch (JsonProcessingException ex) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+		}
 	}
 	
 	@GET
