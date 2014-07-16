@@ -65,6 +65,16 @@
         </route>
         
         <route>
+            <from uri="direct-vm://esb.service.usermanager.user.delete"/>
+            <setHeader headerName="CamelHttpMethod">
+                <constant>DELETE</constant>
+            </setHeader>
+            <recipientList>
+				<simple>{{service.endpoint}}/users/${header.user}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
+        
+        <route>
             <from uri="direct-vm://esb.service.usermanager.user.changePassword"/>
             <setHeader headerName="CamelHttpMethod">
                 <constant>POST</constant>

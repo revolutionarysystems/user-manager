@@ -96,7 +96,7 @@ public class UserRestService extends EntityRestService<User, UserService>{
 
 	@Override
 	protected boolean isAuthorisedToDelete(User e) {
-		return isAdministrator() || isAccountOwner(e);
+		return isAdministrator() || (isAccountOwner(e) && !e.getRoles().contains(Constants.ACCOUNT_OWNER_ROLE));
 	}
 
 	@Override
