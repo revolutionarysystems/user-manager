@@ -1,10 +1,13 @@
 package uk.co.revsys.user.manager.service.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.validation.ConstraintViolationException;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -12,9 +15,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.json.JSONObject;
+import org.springframework.http.MediaType;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.Permission;
@@ -56,7 +62,7 @@ public class UserRestService extends EntityRestService<User, UserService>{
 		try {
 			User user = getService().findById(userId);
 			if(user==null){
-				return Response.status(Response.Status.NOT_FOUND).build();
+				return Response.status(Response.Status.BAD_REQUEST).build();
 			}
             if(!isAuthorisedToFindById(user)){
                 return Response.status(Response.Status.FORBIDDEN).build();
@@ -77,7 +83,7 @@ public class UserRestService extends EntityRestService<User, UserService>{
 		try {
 			User user = getService().findById(userId);
 			if(user==null){
-				return Response.status(Response.Status.NOT_FOUND).build();
+				return Response.status(Response.Status.BAD_REQUEST).build();
 			}
             if(!isAuthorisedToFindById(user)){
                 return Response.status(Response.Status.FORBIDDEN).build();
@@ -98,7 +104,7 @@ public class UserRestService extends EntityRestService<User, UserService>{
         try {
             User user = getService().findById(userId);
             if(user==null){
-                return Response.status(Response.Status.NOT_FOUND).build();
+                return Response.status(Response.Status.BAD_REQUEST).build();
             }
             if(!isUser(user)){
                 return Response.status(Response.Status.FORBIDDEN).build();
@@ -111,6 +117,45 @@ public class UserRestService extends EntityRestService<User, UserService>{
             return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
         } catch (ConstraintViolationException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
+    }
+    
+    @GET
+    @Path("/{id}/profilePicture")
+    public Response getProfilePicture(@PathParam("id") String userId){
+        try {
+            User user = getService().findById(userId);
+            if(user == null){
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            InputStream profilePicture = getService().getProfilePicture(user);
+            return Response.ok(profilePicture, MediaType.IMAGE_PNG_VALUE).build();
+        } catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch(FileNotFoundException ex){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } catch (IOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @POST
+    @Consumes(MediaType.IMAGE_PNG_VALUE)
+    @Path("/{id}/profilePicture")
+    public Response setProfilePicture(@PathParam("id") String userId, InputStream pictureStream){
+        try {
+            User user = getService().findById(userId);
+            if(user == null){
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            String base64Picture = IOUtils.toString(pictureStream);
+            byte[] pictureBytes = Base64.decodeBase64(base64Picture);
+            getService().setProfilePicture(user, new ByteArrayInputStream(pictureBytes));
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (IOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 

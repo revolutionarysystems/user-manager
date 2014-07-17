@@ -1,5 +1,7 @@
 package uk.co.revsys.user.manager.service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +10,8 @@ import java.util.UUID;
 import javax.validation.ConstraintViolationException;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.crypto.hash.Hash;
+import uk.co.revsys.resource.repository.ResourceRepository;
+import uk.co.revsys.resource.repository.model.Resource;
 import uk.co.revsys.user.manager.dao.EntityDao;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
@@ -19,11 +23,13 @@ public class UserService extends EntityServiceImpl<User>{
 
 	private final RoleService roleService;
 	private final DefaultPasswordService passwordService;
+    private final ResourceRepository resourceRepository;
 	
-	public UserService(EntityDao dao, RoleService roleService, DefaultPasswordService passwordService) {
+	public UserService(EntityDao dao, RoleService roleService, DefaultPasswordService passwordService, ResourceRepository resourceRepository) {
 		super(dao);
 		this.roleService = roleService;
 		this.passwordService = passwordService;
+        this.resourceRepository = resourceRepository;
 	}
 
 	@Override
@@ -81,5 +87,15 @@ public class UserService extends EntityServiceImpl<User>{
 		}
 		return permissions;
 	}
+    
+    public void setProfilePicture(User user, InputStream profilePicture) throws IOException{
+        Resource resource = new Resource(user.getId(), "profilePicture");
+        resourceRepository.write(resource, profilePicture);
+    }
+    
+    public InputStream getProfilePicture(User user) throws IOException{
+        Resource resource = new Resource(user.getId(), "profilePicture");
+        return resourceRepository.read(resource);
+    }
 	
 }

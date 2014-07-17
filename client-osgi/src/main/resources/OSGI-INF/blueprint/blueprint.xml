@@ -105,6 +105,31 @@
 			</recipientList>
         </route>
         
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.user.profilePicture"/>
+            <setHeader headerName="CamelHttpMethod">
+                <constant>GET</constant>
+            </setHeader>
+            <recipientList>
+				<simple>{{service.endpoint}}/users/${header.user}/profilePicture?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
+        
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.user.setProfilePicture"/>
+            <setHeader headerName="CamelHttpMethod">
+                <constant>POST</constant>
+            </setHeader>
+            <setHeader headerName="Content-Type">
+                <constant>image/png</constant>
+            </setHeader>
+            <setBody><simple>${header.profilePicture}</simple></setBody>
+            <removeHeaders pattern="profilePicture"/>
+            <recipientList>
+				<simple>{{service.endpoint}}/users/${header.user}/profilePicture?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
+        
         <!-- Utils -->
         
         <route>

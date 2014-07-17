@@ -56,6 +56,7 @@
 		<constructor-arg index="0" ref="userDao"/>
 		<constructor-arg index="1" ref="roleService"/>
 		<constructor-arg index="2" ref="passwordService"/>
+        <constructor-arg index="3" ref="resourcesRepository"/>
 	</bean>
 	
 	<bean id="applicationService" class="uk.co.revsys.user.manager.service.EntityServiceImpl">
@@ -119,41 +120,58 @@
     <bean id="resourceRepositoryFactory" class="uk.co.revsys.resource.repository.ResourceRepositoryFactory">
         <constructor-arg index="0">
             <map key-type="java.lang.String" value-type="uk.co.revsys.resource.repository.ResourceRepositoryBuilder">
-                <entry key="local" value-ref="localDiskResourceRepositoryBuilder"/>
-                <entry key="cloud" value-ref="jCloudResourceRepositoryBuilder"/>
+                <entry key="config-local" value-ref="localDiskConfigRepositoryBuilder"/>
+                <entry key="config-cloud" value-ref="jCloudConfigRepositoryBuilder"/>
+                <entry key="resources-local" value-ref="localDiskResourcesRepositoryBuilder"/>
+                <entry key="resources-cloud" value-ref="jCloudResourcesRepositoryBuilder"/>
             </map>
         </constructor-arg>
     </bean>
     
-    <bean id="localDiskResourceRepositoryBuilder" class="uk.co.revsys.resource.repository.LocalDiskResourceRepositoryBuilder">
+    <bean id="localDiskConfigRepositoryBuilder" class="uk.co.revsys.resource.repository.LocalDiskResourceRepositoryBuilder">
+        <constructor-arg index="0" value="${config.container}"/>
+    </bean>
+    
+    <bean id="jCloudConfigRepositoryBuilder" class="uk.co.revsys.resource.repository.cloud.JCloudResourceRepositoryBuilder">
+        <constructor-arg index="0" value="${cloud.type}"/>
+        <constructor-arg index="1" value="${cloud.identity}"/>
+        <constructor-arg index="2" value="${cloud.credential}"/>
+        <constructor-arg index="3" value="${config.container}"/>
+    </bean>
+	
+    <bean id="configRepository" factory-bean="resourceRepositoryFactory" factory-method="build">
+        <constructor-arg index="0" value="config-${config.repository.type}"/>
+    </bean>
+    
+    <bean id="localDiskResourcesRepositoryBuilder" class="uk.co.revsys.resource.repository.LocalDiskResourceRepositoryBuilder">
         <constructor-arg index="0" value="${resources.container}"/>
     </bean>
     
-    <bean id="jCloudResourceRepositoryBuilder" class="uk.co.revsys.resource.repository.cloud.JCloudResourceRepositoryBuilder">
+    <bean id="jCloudResourcesRepositoryBuilder" class="uk.co.revsys.resource.repository.cloud.JCloudResourceRepositoryBuilder">
         <constructor-arg index="0" value="${cloud.type}"/>
         <constructor-arg index="1" value="${cloud.identity}"/>
         <constructor-arg index="2" value="${cloud.credential}"/>
         <constructor-arg index="3" value="${resources.container}"/>
     </bean>
 	
-    <bean id="applicationConfigurationRepository" factory-bean="resourceRepositoryFactory" factory-method="build">
-        <constructor-arg index="0" value="${repository.type}"/>
+    <bean id="resourcesRepository" factory-bean="resourceRepositoryFactory" factory-method="build">
+        <constructor-arg index="0" value="resources-${config.repository.type}"/>
     </bean>
     
-    <bean id="applicationConfigurationProvider" class="uk.co.revsys.resource.repository.provider.ResourceProvider">
-        <constructor-arg index="0" ref="applicationConfigurationRepository"/>
-        <constructor-arg index="1" value="${resources.path}"/>
-        <constructor-arg index="2" ref="applicationConfigurationLoader"/>
+    <bean id="configProvider" class="uk.co.revsys.resource.repository.provider.ResourceProvider">
+        <constructor-arg index="0" ref="configRepository"/>
+        <constructor-arg index="1" value="${config.path}"/>
+        <constructor-arg index="2" ref="configLoader"/>
     </bean>
     
-    <bean id="applicationConfigurationLoader" class="uk.co.revsys.user.manager.service.ApplicationConfigurationLoader">
+    <bean id="configLoader" class="uk.co.revsys.user.manager.service.ApplicationConfigurationLoader">
         <constructor-arg index="0" ref="applicationService"/>
         <constructor-arg index="1" ref="roleService"/>
         <constructor-arg index="2" ref="permissionService"/>
     </bean>
     
-    <bean id="loadApplicationConfiguration" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-        <property name="targetObject" ref="applicationConfigurationProvider"/>
+    <bean id="loadConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="configProvider"/>
         <property name="targetMethod" value="refresh"/>
     </bean>
 	
