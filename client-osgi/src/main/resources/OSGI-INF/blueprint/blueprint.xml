@@ -130,6 +130,13 @@
 			</recipientList>
         </route>
         
+        <route>
+            <from uri="direct-vm://esb.service.usermanager.user.uploadProfilePicture"/>
+            <recipientList>
+				<simple>{{service.endpoint}}/users/53bfad56ad47c8b9d36b3acb/profilePicture?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+			</recipientList>
+        </route>
+        
         <!-- Utils -->
         
         <route>
