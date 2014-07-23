@@ -165,9 +165,11 @@
     </bean>
     
     <bean id="configLoader" class="uk.co.revsys.user.manager.service.ApplicationConfigurationLoader">
-        <constructor-arg index="0" ref="applicationService"/>
-        <constructor-arg index="1" ref="roleService"/>
-        <constructor-arg index="2" ref="permissionService"/>
+        <constructor-arg index="0" ref="accountService"/>
+        <constructor-arg index="1" ref="userService"/>
+        <constructor-arg index="2" ref="applicationService"/>
+        <constructor-arg index="3" ref="roleService"/>
+        <constructor-arg index="4" ref="permissionService"/>
     </bean>
     
     <bean id="loadConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
