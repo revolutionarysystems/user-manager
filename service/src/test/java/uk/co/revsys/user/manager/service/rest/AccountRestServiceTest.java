@@ -15,7 +15,7 @@ import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 import uk.co.revsys.user.manager.model.Account;
 import uk.co.revsys.user.manager.model.User;
-import uk.co.revsys.user.manager.service.AbstractShiroTest;
+import uk.co.revsys.user.manager.test.util.AbstractShiroTest;
 import uk.co.revsys.user.manager.service.AccountService;
 import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.service.UserService;

@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 import uk.co.revsys.user.manager.model.Permission;
 import uk.co.revsys.user.manager.model.User;
-import uk.co.revsys.user.manager.service.AbstractShiroTest;
+import uk.co.revsys.user.manager.test.util.AbstractShiroTest;
 import uk.co.revsys.user.manager.service.EntityService;
 
 public class EntityRestServiceTest extends AbstractShiroTest{

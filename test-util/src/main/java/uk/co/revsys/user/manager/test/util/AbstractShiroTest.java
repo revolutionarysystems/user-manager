@@ -1,4 +1,4 @@
-package uk.co.revsys.user.manager.service;
+package uk.co.revsys.user.manager.test.util;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.UnavailableSecurityManagerException;
