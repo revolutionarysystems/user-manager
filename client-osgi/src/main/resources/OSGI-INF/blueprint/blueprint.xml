@@ -15,7 +15,7 @@
         <route>
             <from uri="direct-vm://esb.service.usermanager.proxy"/>
             <recipientList>
-				<simple>{{service.endpoint}}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
@@ -29,7 +29,7 @@
         <route>
             <from uri="direct-vm://esb.service.usermanager.account.users"/>
             <recipientList>
-				<simple>{{service.endpoint}}/accounts/${header.account}/users?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/accounts/${header.account}/users?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
@@ -41,7 +41,7 @@
                 <constant>GET</constant>
             </setHeader>
             <recipientList>
-				<simple>{{service.endpoint}}/users/me?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/users/me?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
@@ -51,7 +51,7 @@
                 <constant>GET</constant>
             </setHeader>
             <recipientList>
-				<simple>{{service.endpoint}}/users/{header.user}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/users/{header.user}?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
@@ -64,7 +64,7 @@
                 <constant>application/json</constant>
             </setHeader>
             <recipientList>
-				<simple>{{service.endpoint}}/users?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/users?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
@@ -80,7 +80,7 @@
                 <constant>application/json</constant>
             </setHeader>
             <recipientList>
-				<simple>{{service.endpoint}}/users/${property.userId}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/users/${property.userId}?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
@@ -90,7 +90,7 @@
                 <constant>DELETE</constant>
             </setHeader>
             <recipientList>
-				<simple>{{service.endpoint}}/users/${header.user}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/users/${header.user}?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
@@ -101,7 +101,7 @@
             </setHeader>
             <setBody><simple>password=${header.password}</simple></setBody>
             <recipientList>
-				<simple>{{service.endpoint}}/users/${header.user}/changePassword?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/users/${header.user}/changePassword?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
@@ -111,7 +111,7 @@
                 <constant>GET</constant>
             </setHeader>
             <recipientList>
-				<simple>{{service.endpoint}}/users/${header.user}/profilePicture?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/users/${header.user}/profilePicture?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
@@ -126,14 +126,14 @@
             <setBody><simple>${header.profilePicture}</simple></setBody>
             <removeHeaders pattern="profilePicture"/>
             <recipientList>
-				<simple>{{service.endpoint}}/users/${header.user}/profilePicture?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/users/${header.user}/profilePicture?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
         <route>
             <from uri="direct-vm://esb.service.usermanager.user.uploadProfilePicture"/>
             <recipientList>
-				<simple>{{service.endpoint}}/users/53bfad56ad47c8b9d36b3acb/profilePicture?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
+				<simple>{{service.endpoint}}/users/53bfad56ad47c8b9d36b3acb/profilePicture?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
 			</recipientList>
         </route>
         
