@@ -15,7 +15,7 @@
         <route>
             <from uri="direct-vm://esb.service.usermanager.proxy"/>
             <recipientList>
-				<simple>{{service.endpoint}}?bridgeEndpoint=true&amp;throwExceptionOnFailure=true</simple>
+				<simple>{{service.endpoint}}?bridgeEndpoint=true&amp;throwExceptionOnFailure=false</simple>
 			</recipientList>
         </route>
         
