@@ -87,6 +87,7 @@ public class AccountRestServiceTest extends AbstractShiroTest {
         account.setId("1234");
         User user = new User();
         expect(mockSubject.hasRole("user-manager:administrator")).andReturn(true);
+        expect(mockUserService.findByUsername("test@test.com")).andReturn(null);
         expect(mockAccountService.create(EasyMock.capture(accountCapture))).andReturn(account);
         expect(mockUserService.create(capture(userCapture))).andReturn(user);
         mocksControl.replay();

@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.Account;
+import uk.co.revsys.user.manager.model.Status;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.AccountService;
 import uk.co.revsys.user.manager.service.Constants;
@@ -45,14 +46,23 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             if (!isAuthorisedToCreate(account)) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
-            account = getService().create(account);
             JSONObject jsonObj = new JSONObject(json);
             if (jsonObj.has("user")) {
                 User user = getObjectMapper().readValue(jsonObj.get("user").toString(), User.class);
+                User existingUser = userService.findByUsername(user.getUsername());
+                if (existingUser != null) {
+                    if (existingUser.getStatus().equals(Status.pending)) {
+                        userService.delete(existingUser.getId());
+                    } else {
+                        throw new DuplicateKeyException("A user with username " + user.getUsername() + " already exists");
+                    }
+                }
+                account = getService().create(account);
                 user.setAccount(account.getId());
                 user = userService.create(user);
                 return Response.ok("{\"account\": " + toJSONString(account) + ", \"user\": " + toJSONString(user) + "}").build();
             } else {
+                account = getService().create(account);
                 return Response.ok(toJSONString(account)).build();
             }
         } catch (IOException ex) {
@@ -65,6 +75,35 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
         } catch (ConstraintViolationException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{id}/activate")
+    public Response activate(@PathParam("id") String id){
+        try {
+            Account account = getService().findById(id);
+            if(!isAuthorisedToCreate(account)){
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            if(account.getStatus().equals(Status.pending)){
+                account.setStatus(Status.enabled);
+                account = getService().update(account);
+                List<User> users = getService().getUsers(account);
+                for(User user: users){
+                    user.setStatus(Status.enabled);
+                    userService.update(user);
+                }
+            }
+            return Response.ok(toJSONString(account)).build();
+        } catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (JsonProcessingException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (DuplicateKeyException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ConstraintViolationException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -80,7 +119,7 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
                 if (isOwner(account) || isAdministrator()) {
                     List<User> users = getService().getUsers(account);
                     return Response.status(Response.Status.OK).entity(toJSONString(users)).build();
-                }else{
+                } else {
                     return Response.status(Response.Status.FORBIDDEN).build();
                 }
             }
