@@ -122,12 +122,12 @@ public class EntityRestServiceTest extends AbstractShiroTest{
 		expect(mockEntityService.findById(id)).andReturn(permission1);
 		expect(mockEntityService.update(capture(permissionCapture))).andReturn(permission1);
 		mocksControl.replay();
-		Response response = entityRestService.update(id, toJSONString(permission1));
+		Response response = entityRestService.update(id, "{'description': 'This is a modified test permission'}");
 		assertEquals(200, response.getStatus());
 		assertEquals(toJSONString(permission1), response.getEntity());
 		assertEquals(permission1.getId(), permissionCapture.getValue().getId());
 		assertEquals(permission1.getName(), permissionCapture.getValue().getName());
-		assertEquals(permission1.getDescription(), permissionCapture.getValue().getDescription());
+		assertEquals("This is a modified test permission", permissionCapture.getValue().getDescription());
 		mocksControl.verify();
 	}
 	

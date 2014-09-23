@@ -77,23 +77,50 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
-    
+
     @POST
     @Path("/{id}/activate")
-    public Response activate(@PathParam("id") String id){
+    public Response activate(@PathParam("id") String id) {
         try {
             Account account = getService().findById(id);
-            if(!isAuthorisedToCreate(account)){
+            if (!isAuthorisedToCreate(account)) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
-            if(account.getStatus().equals(Status.pending)){
+            if (account.getStatus().equals(Status.pending)) {
                 account.setStatus(Status.enabled);
                 account = getService().update(account);
                 List<User> users = getService().getUsers(account);
-                for(User user: users){
+                for (User user : users) {
                     user.setStatus(Status.enabled);
                     userService.update(user);
                 }
+            }
+            return Response.ok(toJSONString(account)).build();
+        } catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (JsonProcessingException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (DuplicateKeyException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ConstraintViolationException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @POST
+    @Path("/{id}/disable")
+    public Response disable(@PathParam("id") String id) {
+        try {
+            Account account = getService().findById(id);
+            if (!isAdministrator() && !isOwner(account)) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            account.setStatus(Status.disabled);
+            account = getService().update(account);
+            List<User> users = getService().getUsers(account);
+            for (User user : users) {
+                user.setStatus(Status.disabled);
+                userService.update(user);
             }
             return Response.ok(toJSONString(account)).build();
         } catch (DAOException ex) {

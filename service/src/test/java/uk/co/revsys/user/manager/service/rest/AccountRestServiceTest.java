@@ -14,6 +14,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.easymock.EasyMock.*;
 import uk.co.revsys.user.manager.model.Account;
+import uk.co.revsys.user.manager.model.Status;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.test.util.AbstractShiroTest;
 import uk.co.revsys.user.manager.service.AccountService;
@@ -98,6 +99,26 @@ public class AccountRestServiceTest extends AbstractShiroTest {
         User capturedUser = userCapture.getValue();
         assertEquals("Test User", capturedUser.getName());
         assertEquals("1234", capturedUser.getAccount());
+        mocksControl.verify();
+    }
+    
+    @Test
+    public void testUpdate() throws Exception {
+        Capture<Account> accountCapture = new Capture<Account>();
+        Account account = new Account();
+        account.setName("Test Account");
+        account.setId("1234");
+        account.setStatus(Status.pending);
+        expect(mockSubject.hasRole("user-manager:administrator")).andReturn(true);
+        expect(mockAccountService.findById("1234")).andReturn(account);
+        expect(mockAccountService.update(EasyMock.capture(accountCapture))).andReturn(account);
+        mocksControl.replay();
+        Response response = accountRestService.update("1234", "{'name': 'Test Account 2', 'attributes': {'attr1': 'value1'}}");
+        assertEquals(200, response.getStatus());
+        Account capturedAccount = accountCapture.getValue();
+        assertEquals("Test Account 2", capturedAccount.getName());
+        assertEquals(Status.pending, capturedAccount.getStatus());
+        assertEquals("value1", capturedAccount.getAttributes().get("attr1"));
         mocksControl.verify();
     }
 

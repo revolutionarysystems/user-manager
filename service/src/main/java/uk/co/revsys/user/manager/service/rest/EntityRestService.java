@@ -27,193 +27,190 @@ import org.slf4j.LoggerFactory;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.service.EntityService;
-import uk.co.revsys.user.manager.model.AbstractEntity ;
+import uk.co.revsys.user.manager.model.AbstractEntity;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.Constants;
 
 public abstract class EntityRestService<E extends AbstractEntity, S extends EntityService<E>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EntityRestService.class);
-    
-	private final S service;
-	private final ObjectMapper objectMapper;
 
-	public EntityRestService(S service) {
-		this.service = service;
-		this.objectMapper = new ObjectMapper();
+    private final S service;
+    private final ObjectMapper objectMapper;
+
+    public EntityRestService(S service) {
+        this.service = service;
+        this.objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		objectMapper.addMixInAnnotations(User.class, UserJacksonMixin.class);
-	}
-	
-	@GET
-	@Path("/all")
-	public Response findAll(){
-		try {
-			return Response.ok(toJSONString(service.findAll())).build();
-		} catch (JsonProcessingException ex) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-		} catch (DAOException ex) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-		}
-	}
+        objectMapper.addMixInAnnotations(User.class, UserJacksonMixin.class);
+    }
 
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response create(String json){
+    @GET
+    @Path("/all")
+    public Response findAll() {
+        try {
+            return Response.ok(toJSONString(service.findAll())).build();
+        } catch (JsonProcessingException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response create(String json) {
         System.out.println("creating = " + json);
-		try {
-			E entity = objectMapper.readValue(json, getEntityType());
-			if(!isAuthorisedToCreate(entity)){
-				return Response.status(Response.Status.FORBIDDEN).build();
-			}
-			entity = service.create(entity);
-			return Response.ok(toJSONString(entity)).build();
-		} catch (IOException ex) {
+        try {
+            E entity = objectMapper.readValue(json, getEntityType());
+            if (!isAuthorisedToCreate(entity)) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            entity = service.create(entity);
+            return Response.ok(toJSONString(entity)).build();
+        } catch (IOException ex) {
             LOGGER.error("Failed to create entity", ex);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
-		} catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (DAOException ex) {
             LOGGER.error("Failed to create entity", ex);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
-		} catch (DuplicateKeyException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (DuplicateKeyException ex) {
             LOGGER.error("Failed to create entity", ex);
-			return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
-		} catch (ConstraintViolationException ex) {
+            return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
+        } catch (ConstraintViolationException ex) {
             LOGGER.error("Failed to create entity", ex);
-			return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
-		}
-	}
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
+    }
 
-	@GET
-	@Path("/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response findById(@PathParam("id") String id){
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response findById(@PathParam("id") String id) {
         System.out.println("Find by id: " + id);
-		try {
-			E entity = service.findById(id);
-			if(entity==null){
-				return Response.status(Response.Status.NOT_FOUND).build();
-			}
-            if(!isAuthorisedToFindById(entity)){
-				return Response.status(Response.Status.FORBIDDEN).build();
-			}
-			return Response.ok(toJSONString(entity)).build();
-		} catch (JsonProcessingException ex) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-		} catch (DAOException ex) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-		}
-	}
+        try {
+            E entity = service.findById(id);
+            if (entity == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            if (!isAuthorisedToFindById(entity)) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            return Response.ok(toJSONString(entity)).build();
+        } catch (JsonProcessingException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-	@POST
-	@Path("/{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response update(@PathParam("id") String id, String json){
+    @POST
+    @Path("/{id}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response update(@PathParam("id") String id, String json) {
         System.out.println("Updating " + id + " with " + json);
         LOGGER.info("Updating " + id + ": " + json);
-		try {
-			E existingEntity = service.findById(id);
-            if(existingEntity==null){
-				return Response.status(Response.Status.NOT_FOUND).build();
-			}
-			if(!isAuthorisedToUpdate(existingEntity)){
-				return Response.status(Response.Status.FORBIDDEN).build();
-			}
-			JsonConfig jsonConfig = new JsonConfig();
-			jsonConfig.setJsonPropertyFilter(new PropertyFilter() {
-				@Override
-				public boolean apply(Object source, String name, Object value) {
-					if(value == null){
-						return true;
-					}else if(value instanceof List){
-						return ((List)value).isEmpty();
-					}else if(value instanceof Map){
-						return ((Map)value).isEmpty();
-					}
-					return false;
-				}
-			});
-			JSONObject existingJSON = JSONObject.fromObject(existingEntity, jsonConfig);
+        try {
+            E existingEntity = service.findById(id);
+            if (existingEntity == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            if (!isAuthorisedToUpdate(existingEntity)) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            final org.json.JSONObject jsonObject = new org.json.JSONObject(json);
+            JsonConfig jsonConfig = new JsonConfig();
+            jsonConfig.setJsonPropertyFilter(new PropertyFilter() {
+                @Override
+                public boolean apply(Object source, String name, Object value) {
+                    if(!getEntityType().isAssignableFrom(source.getClass())){
+                        return false;
+                    }
+                    return !jsonObject.has(name);
+                }
+            });
+            JSONObject existingJSON = JSONObject.fromObject(existingEntity);
             json = filter(new org.json.JSONObject(json), existingEntity).toString();
-			E newEntity = objectMapper.readValue(json, getEntityType());
-			JSONObject newJSON = JSONObject.fromObject(newEntity, jsonConfig);
-			existingJSON.putAll(newJSON);
-			E entity = objectMapper.readValue(existingJSON.toString(), getEntityType());
-			entity.setId(id);
+            E newEntity = objectMapper.readValue(json, getEntityType());
+            JSONObject newJSON = JSONObject.fromObject(newEntity, jsonConfig);
+            existingJSON.putAll(newJSON);
+            E entity = objectMapper.readValue(existingJSON.toString(), getEntityType());
+            entity.setId(id);
             System.out.println("Updating " + id + " with " + existingJSON.toString());
             LOGGER.info("Updating " + id + ": " + existingJSON.toString());
-			entity = service.update(entity);
-			return Response.ok(toJSONString(entity)).build();
-		} catch (DAOException ex) {
+            entity = service.update(entity);
+            return Response.ok(toJSONString(entity)).build();
+        } catch (DAOException ex) {
             LOGGER.error("Failed to update entity " + id, ex);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
-		} catch (ConstraintViolationException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (ConstraintViolationException ex) {
             LOGGER.error("Failed to update entity " + id, ex);
-			return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
-		}catch (IOException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (IOException ex) {
             LOGGER.error("Failed to update entity " + id, ex);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
-		} catch (DuplicateKeyException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (DuplicateKeyException ex) {
             LOGGER.error("Failed to update entity " + id, ex);
-			return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
+            return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
         }
-	}
+    }
 
-	@DELETE
-	@Path("/{id}")
-	public Response delete(@PathParam("id") String id){
-		try {
-			E entity = service.findById(id);
-			if(entity == null){
-				return Response.status(Response.Status.NOT_FOUND).build();
-			}
-			if(!isAuthorisedToDelete(entity)){
-				return Response.status(Response.Status.FORBIDDEN).build();
-			}
-			service.delete(id);
-			return Response.status(Response.Status.NO_CONTENT).build();
-		} catch (DAOException ex) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-		}
-	}
+    @DELETE
+    @Path("/{id}")
+    public Response delete(@PathParam("id") String id) {
+        try {
+            E entity = service.findById(id);
+            if (entity == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            if (!isAuthorisedToDelete(entity)) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            service.delete(id);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-	protected S getService() {
-		return service;
-	}
+    protected S getService() {
+        return service;
+    }
 
     protected ObjectMapper getObjectMapper() {
         return objectMapper;
     }
 
-	protected String toJSONString(Object o) throws JsonProcessingException {
-		return objectMapper.writeValueAsString(o);
-	}
-	
-	protected boolean isAuthorisedToCreate(E e){
-		return true;
-	}
-	
-	protected boolean isAuthorisedToFindById(E e){
-		return true;
-	}
-	
-	protected boolean isAuthorisedToUpdate(E e){
-		return true;
-	}
-	
-	protected boolean isAuthorisedToDelete(E e){
-		return true;
-	}
-    
-    protected org.json.JSONObject filter(org.json.JSONObject json, E entity){
+    protected String toJSONString(Object o) throws JsonProcessingException {
+        return objectMapper.writeValueAsString(o);
+    }
+
+    protected boolean isAuthorisedToCreate(E e) {
+        return true;
+    }
+
+    protected boolean isAuthorisedToFindById(E e) {
+        return true;
+    }
+
+    protected boolean isAuthorisedToUpdate(E e) {
+        return true;
+    }
+
+    protected boolean isAuthorisedToDelete(E e) {
+        return true;
+    }
+
+    protected org.json.JSONObject filter(org.json.JSONObject json, E entity) {
         return json;
     }
-	
-	protected boolean isAdministrator(){
-		return SecurityUtils.getSubject().hasRole(Constants.ADMINISTRATOR_ROLE);
-	}
 
-	protected abstract Class<? extends E> getEntityType();
+    protected boolean isAdministrator() {
+        return SecurityUtils.getSubject().hasRole(Constants.ADMINISTRATOR_ROLE);
+    }
+
+    protected abstract Class<? extends E> getEntityType();
 
 }

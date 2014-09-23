@@ -61,12 +61,13 @@ public class SpringDataMongoDaoTest {
 		} catch (ConstraintViolationException ex) {
 			// Pass
 		}
-		account1.setStatus(Status.enabled);
+		account1.setStatus(Status.pending);
 		Account result = mongoDao.create(account1);
 		String account1Id = result.getId();
 		System.out.println("account1Id = " + account1Id);
 		assertNotNull(account1Id);
 		assertEquals(24, account1Id.length());
+        assertEquals(Status.pending, account1.getStatus());
 		try {
 			mongoDao.create(account1);
 			fail();
@@ -76,6 +77,7 @@ public class SpringDataMongoDaoTest {
 		result = mongoDao.findById(account1Id);
 		assertEquals(account1Id, result.getId());
 		assertEquals("Test Account", result.getName());
+        assertEquals(Status.pending, result.getStatus());
 		List<Account> results = mongoDao.findAll();
 		assertEquals(1, results.size());
 		assertEquals(account1Id, results.get(0).getId());
