@@ -66,7 +66,7 @@ public class SpringDataMongoDaoTest {
 		String account1Id = result.getId();
 		System.out.println("account1Id = " + account1Id);
 		assertNotNull(account1Id);
-		assertEquals(24, account1Id.length());
+		assertEquals(36, account1Id.length());
         assertEquals(Status.pending, account1.getStatus());
 		try {
 			mongoDao.create(account1);

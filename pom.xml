@@ -16,6 +16,7 @@
 		<module>mongo</module>
         <module>test-util</module>
 		<module>service</module>
+        <module>camel</module>
         <module>client-java</module>
         <module>client-osgi</module>
 	</modules>

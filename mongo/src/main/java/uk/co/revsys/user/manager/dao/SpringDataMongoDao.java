@@ -3,6 +3,7 @@ package uk.co.revsys.user.manager.dao;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import javax.validation.Validator;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -25,6 +26,9 @@ public class SpringDataMongoDao<E extends AbstractEntity> extends ValidatingEnti
 	@Override
 	public E doCreate(E entity) throws DAOException, DuplicateKeyException {
 		try {
+            if(entity.getId() == null){
+                entity.setId(UUID.randomUUID().toString());
+            }
 			mongoOps.insert(entity);
 			return entity;
 		} catch (org.springframework.dao.DuplicateKeyException ex) {
