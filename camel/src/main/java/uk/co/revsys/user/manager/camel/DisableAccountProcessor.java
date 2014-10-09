@@ -1,5 +1,6 @@
 package uk.co.revsys.user.manager.camel;
 
+import org.apache.camel.Exchange;
 import uk.co.revsys.esb.component.HttpProxyProcessor;
 
 public class DisableAccountProcessor extends HttpProxyProcessor{
@@ -24,7 +25,7 @@ public class DisableAccountProcessor extends HttpProxyProcessor{
     }
 
     @Override
-    public String getUrlPath() {
+    public String getUrlPath(Exchange exchange) {
        return "/accounts/" + getId() + "/disable";
     }
 

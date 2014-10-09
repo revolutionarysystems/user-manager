@@ -5,16 +5,25 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.shiro.SecurityUtils;
@@ -24,7 +33,6 @@ import org.apache.wink.common.model.multipart.InPart;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
-import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.Permission;
 import uk.co.revsys.user.manager.model.Role;
 import uk.co.revsys.user.manager.model.User;
@@ -102,23 +110,56 @@ public class UserRestService extends EntityRestService<User, UserService> {
     @POST
     @Path("/{id}/changePassword")
     public Response changePassword(@PathParam("id") String userId, @FormParam("password") String password) {
-        System.out.println("change password for " + userId + " to " + password);
         try {
             User user = getService().findById(userId);
             if (user == null) {
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
-            if (!isUser(user)) {
+            if (!isAdministrator() && !isUser(user)) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
             getService().changePassword(user, password);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (DAOException ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
-        } catch (DuplicateKeyException ex) {
-            return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
         } catch (ConstraintViolationException ex) {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
+    }
+    
+    // When POST was used username was double decoded - so username with a + in would come through with a space instead
+    @PUT
+    @Path("/changePassword")
+    public Response changePasswordByUsername(@FormParam("username") String username, @FormParam("password") String password) {
+        try {
+            User user = getService().findOne("username", username);
+            if (user == null) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("User not found").build();
+            }
+            if (!isAdministrator()) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            getService().changePassword(user, password);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (ConstraintViolationException ex) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/resetPassword")
+    public Response resetPassword(@FormParam("username") String username){
+        try {
+            User user = getService().findOne("username", username);
+            if(user == null){
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            getService().resetPassword(user);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (DAOException ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 

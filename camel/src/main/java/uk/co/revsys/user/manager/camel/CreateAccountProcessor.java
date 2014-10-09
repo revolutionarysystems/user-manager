@@ -1,5 +1,6 @@
 package uk.co.revsys.user.manager.camel;
 
+import org.apache.camel.Exchange;
 import uk.co.revsys.esb.component.HttpProxyProcessor;
 
 public class CreateAccountProcessor extends HttpProxyProcessor{
@@ -19,7 +20,7 @@ public class CreateAccountProcessor extends HttpProxyProcessor{
     }
 
     @Override
-    public String getUrlPath() {
+    public String getUrlPath(Exchange exchange) {
         return "/accounts";
     }
 

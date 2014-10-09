@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.validation.ConstraintViolationException;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
 import org.apache.shiro.crypto.hash.Hash;
@@ -66,14 +68,22 @@ public class UserService extends EntityServiceImpl<User> {
         nameFilter.put("username", username);
         return findOne(nameFilter);
     }
+    
+    public User resetPassword(User user) throws DAOException{
+        return changePassword(user, UUID.randomUUID().toString());
+    }
 
-    public User changePassword(User user, String password) throws DAOException, DuplicateKeyException {
-        Hash hash = passwordService.hashPassword(password);
-        String hashedPassword = hash.toBase64();
-        user.setPassword(hashedPassword);
-        String salt = hash.getSalt().toBase64();
-        user.setPasswordSalt(salt);
-        return update(user);
+    public User changePassword(User user, String password) throws DAOException {
+        try {
+            Hash hash = passwordService.hashPassword(password);
+            String hashedPassword = hash.toBase64();
+            user.setPassword(hashedPassword);
+            String salt = hash.getSalt().toBase64();
+            user.setPasswordSalt(salt);
+            return update(user);
+        } catch (DuplicateKeyException ex) {
+            throw new DAOException(ex);
+        }
     }
 
     public List<Role> getRoles(User user) throws DAOException {
