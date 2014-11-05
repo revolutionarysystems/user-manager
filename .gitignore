@@ -7,3 +7,7 @@
 /model/target/
 /test-util/target
 /camel/target
+/test-util - Copy/target/
+/shiro-test-util/target/
+/test/target/
+/dynamodb/target/
