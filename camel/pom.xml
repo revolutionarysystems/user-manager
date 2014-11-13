@@ -6,12 +6,12 @@
     <parent>
         <artifactId>user-manager-parent</artifactId>
         <groupId>uk.co.revsys.user-manager</groupId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.1.0</version>
     </parent>
 
     <artifactId>user-manager-camel</artifactId>
     <packaging>bundle</packaging>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
 
     <name>User Manager - Camel</name>
 
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>uk.co.revsys.esb</groupId>
             <artifactId>esb-component</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
+            <version>0.1.0</version>
         </dependency> 
         
         <dependency>
