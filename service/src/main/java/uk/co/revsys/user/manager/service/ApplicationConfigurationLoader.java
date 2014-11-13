@@ -71,11 +71,20 @@ public class ApplicationConfigurationLoader implements FilteringResourceHandler 
                 JSONObject entityJson = json.getJSONObject(i);
                 String entityId = entityJson.optString("id");
                 AbstractEntity entity = objectMapper.readValue(entityJson.toString(), entityType);
-                if (entityId != null && service.findById(entityId) != null) {
-                    service.update(entity);
-                } else {
-                    service.create(entity);
+                if (entityId != null) {
+                    AbstractEntity existingEntity = service.findById(entityId);
+                    if (existingEntity != null) {
+                        if(entity instanceof User){
+                            User user = (User)entity;
+                            User existingUser = (User)existingEntity;
+                            user.setPassword(existingUser.getPassword());
+                            user.setPasswordSalt(existingUser.getPasswordSalt());
+                        }
+                        service.update(entity);
+                        return;
+                    }
                 }
+                service.create(entity);
             }
         }
     }
