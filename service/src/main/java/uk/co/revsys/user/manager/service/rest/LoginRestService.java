@@ -31,11 +31,9 @@ public class LoginRestService {
 	@POST
 	@Produces("application/json")
 	public Response login(){
-        System.out.println("login");
 		try {
 			Subject subject = SecurityUtils.getSubject();
 			if(!subject.isAuthenticated()){
-                System.out.println("not authenticated");
 				return Response.status(Response.Status.UNAUTHORIZED).build();
 			}
 			String userId = (String) subject.getPrincipal();

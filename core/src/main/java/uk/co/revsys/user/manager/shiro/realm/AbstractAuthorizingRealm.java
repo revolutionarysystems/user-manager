@@ -32,10 +32,7 @@ public abstract class AbstractAuthorizingRealm extends AuthorizingRealm {
 			User user = getUser(userId);
 			SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
             List<Role> roles = getRoles(user);
-            System.out.println("roles = " + roles);
 			for (Role role : roles) {
-                System.out.println("role = " + role);
-                System.out.println("role = " + role.getName());
 				authorizationInfo.addRole(role.getName());
 			}
 			for (Permission permission : getPermissions(user)) {
@@ -49,7 +46,6 @@ public abstract class AbstractAuthorizingRealm extends AuthorizingRealm {
 
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken at) throws AuthenticationException {
-        System.out.println("doGetAuthenticationInfo");
 		try {
 			if (!(at instanceof UsernamePasswordToken)) {
 				return null;
@@ -65,9 +61,7 @@ public abstract class AbstractAuthorizingRealm extends AuthorizingRealm {
 				return null;
 			}
 			String password = user.getPassword();
-			System.out.println("password = " + password);
 			String saltBase64 = user.getPasswordSalt();
-			System.out.println("saltBase64 = " + saltBase64);
 			byte[] saltBytes = Base64.decode(saltBase64);
 			SimplePrincipalCollection principalCollection = new SimplePrincipalCollection();
 			principalCollection.add(user.getId(), getName());
@@ -75,7 +69,6 @@ public abstract class AbstractAuthorizingRealm extends AuthorizingRealm {
 			attributes.put("name", user.getName());
 			principalCollection.add(user, getName());
 			SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(principalCollection, password, ByteSource.Util.bytes(saltBytes));
-			System.out.println("authenticationInfo = " + authenticationInfo);
 			return authenticationInfo;
 		} catch (RealmException ex) {
 			throw new AuthenticationException(ex);

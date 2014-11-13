@@ -61,7 +61,6 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(String json) {
-        System.out.println("creating = " + json);
         try {
             E entity = objectMapper.readValue(json, getEntityType());
             if (!isAuthorisedToCreate(entity)) {
@@ -88,7 +87,6 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response findById(@PathParam("id") String id) {
-        System.out.println("Find by id: " + id);
         try {
             E entity = service.findById(id);
             if (entity == null) {
@@ -110,7 +108,6 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response update(@PathParam("id") String id, String json) {
-        System.out.println("Updating " + id + " with " + json);
         LOGGER.info("Updating " + id + ": " + json);
         try {
             E existingEntity = service.findById(id);
@@ -138,7 +135,6 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             existingJSON.putAll(newJSON);
             E entity = objectMapper.readValue(existingJSON.toString(), getEntityType());
             entity.setId(id);
-            System.out.println("Updating " + id + " with " + existingJSON.toString());
             LOGGER.info("Updating " + id + ": " + existingJSON.toString());
             entity = service.update(entity);
             return Response.ok(toJSONString(entity)).build();

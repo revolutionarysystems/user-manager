@@ -68,7 +68,6 @@ public class UserRestService extends EntityRestService<User, UserService> {
     @GET
     @Path("/{id}/roles")
     public Response getRoles(@PathParam("id") String userId) {
-        System.out.println("get roles");
         try {
             User user = getService().findById(userId);
             if (user == null) {
@@ -89,7 +88,6 @@ public class UserRestService extends EntityRestService<User, UserService> {
     @GET
     @Path("/{id}/permissions")
     public Response getPermissions(@PathParam("id") String userId) {
-        System.out.println("get permissions");
         try {
             User user = getService().findById(userId);
             if (user == null) {

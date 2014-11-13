@@ -42,12 +42,9 @@ public class UserManagerRealm extends AbstractAuthorizingRealm {
             HttpResponse response = httpClient.invoke(request);
             if (response.getStatusCode() == 200) {
                 JSONObject json = new JSONObject(IOUtils.toString(response.getInputStream()));
-                System.out.println("json = " + json);
                 JSONObject accountJson = json.getJSONObject("account");
-                System.out.println("accountJson = " + accountJson);
                 Account account = objectMapper.readValue(accountJson.toString(), Account.class);
                 json.put("account", account.getId());
-                System.out.println("json = " + json);
                 User user = objectMapper.readValue(json.toString(), User.class);
                 authenticationDetails.setUser(user);
                 authenticationDetails.setAccount(account);
