@@ -51,8 +51,10 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
         try {
             return Response.ok(toJSONString(service.findAll())).build();
         } catch (JsonProcessingException ex) {
+            LOGGER.error("Failed to find all entities", ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (DAOException ex) {
+            LOGGER.error("Failed to find all entities", ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -69,16 +71,16 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             entity = service.create(entity);
             return Response.ok(toJSONString(entity)).build();
         } catch (IOException ex) {
-            LOGGER.error("Failed to create entity", ex);
+            LOGGER.error("Failed to create entity: " + json, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         } catch (DAOException ex) {
-            LOGGER.error("Failed to create entity", ex);
+            LOGGER.error("Failed to create entity: " + json, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         } catch (DuplicateKeyException ex) {
-            LOGGER.error("Failed to create entity", ex);
+            LOGGER.error("Failed to create entity: " + json, ex);
             return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
         } catch (ConstraintViolationException ex) {
-            LOGGER.error("Failed to create entity", ex);
+            LOGGER.error("Failed to create entity: " + json, ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
@@ -97,8 +99,10 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             }
             return Response.ok(toJSONString(entity)).build();
         } catch (JsonProcessingException ex) {
+            LOGGER.error("Failed to find entity: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (DAOException ex) {
+            LOGGER.error("Failed to find entity: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -167,6 +171,7 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             service.delete(id);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (DAOException ex) {
+            LOGGER.error("Failed to delete entity: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
