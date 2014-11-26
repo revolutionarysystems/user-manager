@@ -6,25 +6,26 @@ import javax.validation.ConstraintViolationException;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.AbstractEntity;
+import uk.co.revsys.user.manager.service.exception.ServiceException;
 
 public interface EntityService<E extends AbstractEntity> {
 
-	public E create(E entity) throws DAOException, DuplicateKeyException, ConstraintViolationException;
+	public E create(E entity) throws ServiceException, DAOException, DuplicateKeyException, ConstraintViolationException;
 	
-	public List<E> findAll() throws DAOException;
+	public List<E> findAll() throws ServiceException, DAOException;
 	
-	public E findById(String id) throws DAOException;
+	public E findById(String id) throws ServiceException, DAOException;
 	
-	public E update(E entity) throws DAOException, DuplicateKeyException, ConstraintViolationException;
+	public E update(E entity) throws ServiceException, DAOException, ConstraintViolationException;
 	
-	public void delete(String id) throws DAOException;
+	public void delete(String id) throws ServiceException, DAOException;
     
-    public List<E> find(String key, Object value) throws DAOException;
+    public List<E> find(String key, Object value) throws ServiceException, DAOException;
 	
-	public List<E> find(Map<String, Object> filters) throws DAOException;
+	public List<E> find(Map<String, Object> filters) throws ServiceException, DAOException;
     
-    public E findOne(String key, Object value) throws DAOException;
+    public E findOne(String key, Object value) throws ServiceException, DAOException;
 	
-	public E findOne(Map<String, Object> filters) throws DAOException;
+	public E findOne(Map<String, Object> filters) throws ServiceException, DAOException;
 	
 }

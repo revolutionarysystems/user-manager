@@ -3,6 +3,8 @@ package uk.co.revsys.user.manager.shiro.realm;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.model.Account;
@@ -11,6 +13,7 @@ import uk.co.revsys.user.manager.model.Role;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.service.UserService;
+import uk.co.revsys.user.manager.service.exception.ServiceException;
 import uk.co.revsys.user.manager.shiro.realm.exception.RealmException;
 
 public class DaoRealm extends AbstractAuthorizingRealm {
@@ -38,6 +41,8 @@ public class DaoRealm extends AbstractAuthorizingRealm {
         try {
             return accountService.findById(accountId);
         } catch (DAOException ex) {
+            throw new RealmException(ex);
+        } catch (ServiceException ex) {
             throw new RealmException(ex);
         }
     }
@@ -76,6 +81,8 @@ public class DaoRealm extends AbstractAuthorizingRealm {
         try {
             return userService.getPermissions(user);
         } catch (DAOException ex) {
+            throw new RealmException(ex);
+        } catch (ServiceException ex) {
             throw new RealmException(ex);
         }
     }

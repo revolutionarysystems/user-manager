@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -31,6 +33,7 @@ import uk.co.revsys.user.manager.model.Role;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.Constants;
 import uk.co.revsys.user.manager.service.UserService;
+import uk.co.revsys.user.manager.service.exception.ServiceException;
 
 @Path("/users")
 public class UserRestService extends EntityRestService<User, UserService> {
@@ -103,6 +106,9 @@ public class UserRestService extends EntityRestService<User, UserService> {
         } catch (JsonProcessingException ex) {
             LOGGER.error("Failed to retrieve user permissions: " + userId, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to retrieve user permissions: " + userId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
 
@@ -125,6 +131,9 @@ public class UserRestService extends EntityRestService<User, UserService> {
         } catch (ConstraintViolationException ex) {
             LOGGER.error("Failed to change password: " + userId, ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to change password: " + userId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
     
@@ -148,6 +157,9 @@ public class UserRestService extends EntityRestService<User, UserService> {
         } catch (ConstraintViolationException ex) {
             LOGGER.error("Failed to change password: " + username, ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to change password: " + username, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
     
@@ -162,6 +174,9 @@ public class UserRestService extends EntityRestService<User, UserService> {
             getService().resetPassword(user);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (DAOException ex) {
+            LOGGER.error("Failed to reset password: " + username, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
             LOGGER.error("Failed to reset password: " + username, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }

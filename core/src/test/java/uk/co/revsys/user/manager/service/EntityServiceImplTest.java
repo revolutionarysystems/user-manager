@@ -4,6 +4,10 @@ package uk.co.revsys.user.manager.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -12,8 +16,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.easymock.EasyMock.*;
 import org.easymock.IMocksControl;
+import static org.junit.Assert.fail;
 import uk.co.revsys.user.manager.dao.EntityDao;
 import uk.co.revsys.user.manager.model.Account;
+import uk.co.revsys.user.manager.model.Status;
 
 public class EntityServiceImplTest {
 
@@ -35,9 +41,11 @@ public class EntityServiceImplTest {
 
     @Before
     public void setUp() {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		Validator validator = factory.getValidator();
 		mocksControl = EasyMock.createControl();
 		mockEntityDao = mocksControl.createMock(EntityDao.class);
-		entityService = new EntityServiceImpl(mockEntityDao);
+		entityService = new EntityServiceImpl(validator, mockEntityDao);
     }
 
     @After
@@ -50,11 +58,20 @@ public class EntityServiceImplTest {
 	@Test
 	public void testCreate() throws Exception {
 		Account account = new Account();
+        account.setName("Test Account");
+        account.setStatus(null);
+        try{
+            entityService.create(account);
+            fail("Expected ConstraintViolationException to be thrown");
+        }catch(ConstraintViolationException ex){
+            // pass
+        }
+        account.setStatus(Status.enabled);
 		expect(mockEntityDao.create(account)).andReturn(account);
 		mocksControl.replay();
 		entityService.create(account);
 		mocksControl.verify();
-	}
+    }   
 
 	/**
 	 * Test of findAll method, of class EntityServiceImpl.
@@ -86,6 +103,15 @@ public class EntityServiceImplTest {
 	@Test
 	public void testUpdate() throws Exception {
 		Account account = new Account();
+        account.setName("Test Account");
+        account.setStatus(null);
+        try{
+            entityService.create(account);
+            fail("Expected ConstraintViolationException to be thrown");
+        }catch(ConstraintViolationException ex){
+            // pass
+        }
+        account.setStatus(Status.enabled);
 		expect(mockEntityDao.update(account)).andReturn(account);
 		mocksControl.replay();
 		entityService.update(account);

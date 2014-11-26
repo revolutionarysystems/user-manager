@@ -1,23 +1,34 @@
 package uk.co.revsys.user.manager.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import uk.co.revsys.user.manager.dao.EntityDao;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.AbstractEntity;
+import uk.co.revsys.user.manager.service.exception.ServiceException;
 
-public class EntityServiceImpl<E extends AbstractEntity> implements EntityService<E>{
+public class EntityServiceImpl<E extends AbstractEntity> extends ValidatingEntityService<E>{
 
 	private final EntityDao<E> dao;
 
-	public EntityServiceImpl(EntityDao dao) {
+	public EntityServiceImpl(Validator validator, EntityDao dao) {
+        super(validator);
 		this.dao = dao;
 	}
+
+    @Override
+    public E create(E entity) throws ServiceException, DAOException, DuplicateKeyException, ConstraintViolationException {
+        entity.setCreationTime(new Date());
+        entity.setLastModifiedTime(new Date());
+        return super.create(entity);
+    }
 	
 	@Override
-	public E create(E entity) throws DAOException, DuplicateKeyException, ConstraintViolationException{
+	public E doCreate(E entity) throws ServiceException, DAOException, DuplicateKeyException{
 		return dao.create(entity);
 	}
 
@@ -31,8 +42,14 @@ public class EntityServiceImpl<E extends AbstractEntity> implements EntityServic
 		return dao.findById(id);
 	}
 
+    @Override
+    public E update(E entity) throws ServiceException, DAOException, ConstraintViolationException {
+        entity.setLastModifiedTime(new Date());
+        return super.update(entity);
+    }
+
 	@Override
-	public E update(E entity) throws DAOException, DuplicateKeyException, ConstraintViolationException {
+	public E doUpdate(E entity) throws DAOException {
 		return dao.update(entity);
 	}
 

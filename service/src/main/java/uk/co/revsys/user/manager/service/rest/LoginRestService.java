@@ -3,6 +3,8 @@ package uk.co.revsys.user.manager.service.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -15,6 +17,7 @@ import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.service.UserService;
+import uk.co.revsys.user.manager.service.exception.ServiceException;
 
 @Path("/login")
 public class LoginRestService {
@@ -50,7 +53,10 @@ public class LoginRestService {
 		} catch (JsonProcessingException ex) {
             LOGGER.error("Failed to login", ex);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-		}
+		} catch (ServiceException ex) {
+            LOGGER.error("Failed to login", ex);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
 	}
 	
 }
