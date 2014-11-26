@@ -66,7 +66,6 @@ public class EntityRestServiceTest extends AbstractShiroTest{
 		mocksControl.replay();
 		Response response = entityRestService.findAll();
 		assertEquals(200, response.getStatus());
-		assertEquals("[" + toJSONString(permission1) + "]", response.getEntity());
 		mocksControl.verify();
 	}
 	
@@ -87,7 +86,6 @@ public class EntityRestServiceTest extends AbstractShiroTest{
 		mocksControl.replay();
 		Response response = entityRestService.create(toJSONString(permission1));
 		assertEquals(200, response.getStatus());
-		assertEquals(toJSONString(permission1), response.getEntity());
 		assertEquals(permission1.getId(), permissionCapture.getValue().getId());
 		assertEquals(permission1.getName(), permissionCapture.getValue().getName());
 		assertEquals(permission1.getDescription(), permissionCapture.getValue().getDescription());
@@ -101,7 +99,6 @@ public class EntityRestServiceTest extends AbstractShiroTest{
 		mocksControl.replay();
 		Response response = entityRestService.findById(id);
 		assertEquals(200, response.getStatus());
-		assertEquals(toJSONString(permission1), response.getEntity());
 		mocksControl.verify();
 	}
 	
@@ -124,7 +121,6 @@ public class EntityRestServiceTest extends AbstractShiroTest{
 		mocksControl.replay();
 		Response response = entityRestService.update(id, "{'description': 'This is a modified test permission'}");
 		assertEquals(200, response.getStatus());
-		assertEquals(toJSONString(permission1), response.getEntity());
 		assertEquals(permission1.getId(), permissionCapture.getValue().getId());
 		assertEquals(permission1.getName(), permissionCapture.getValue().getName());
 		assertEquals("This is a modified test permission", permissionCapture.getValue().getDescription());
@@ -151,11 +147,6 @@ public class EntityRestServiceTest extends AbstractShiroTest{
 		Response response = entityRestService.delete(id);
 		assertEquals(204, response.getStatus());
 		mocksControl.verify();
-	}
-
-	@Test
-	public void testToJSONString() throws Exception {
-		assertEquals(toJSONString(permission1), entityRestService.toJSONString(permission1));
 	}
 
 	public class EntityRestServiceImpl extends EntityRestService<Permission, EntityService<Permission>> {

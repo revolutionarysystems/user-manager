@@ -3,6 +3,7 @@ package uk.co.revsys.user.manager.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
 import javax.validation.ConstraintViolationException;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONArray;
@@ -18,6 +19,7 @@ import uk.co.revsys.user.manager.model.Application;
 import uk.co.revsys.user.manager.model.Permission;
 import uk.co.revsys.user.manager.model.Role;
 import uk.co.revsys.user.manager.model.User;
+import uk.co.revsys.user.manager.service.exception.ServiceException;
 
 public class ApplicationConfigurationLoader implements FilteringResourceHandler {
 
@@ -57,6 +59,8 @@ public class ApplicationConfigurationLoader implements FilteringResourceHandler 
             LOGGER.error("Unable to update application from configuration: " + resource.getName(), ex);
         } catch (IOException ex) {
             LOGGER.error("Unable to update application from configuration: " + resource.getName(), ex);
+        } catch (ServiceException ex) {
+            LOGGER.error("Unable to update application from configuration: " + resource.getName(), ex);
         }
     }
 
@@ -65,7 +69,7 @@ public class ApplicationConfigurationLoader implements FilteringResourceHandler 
         return resource.getName().endsWith(".json");
     }
 
-    private void createEntities(EntityService service, Class<? extends AbstractEntity> entityType, JSONArray json) throws DAOException, DuplicateKeyException, IOException {
+    private void createEntities(EntityService service, Class<? extends AbstractEntity> entityType, JSONArray json) throws DAOException, DuplicateKeyException, IOException, ServiceException {
         if (json != null) {
             for (int i = 0; i < json.length(); i++) {
                 JSONObject entityJson = json.getJSONObject(i);

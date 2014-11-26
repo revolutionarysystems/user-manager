@@ -12,19 +12,18 @@ import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.AbstractEntity;
 
-public class SpringDataMongoDao<E extends AbstractEntity> extends ValidatingEntityDao<E> {
+public class SpringDataMongoDao<E extends AbstractEntity> implements EntityDao<E> {
 
 	private final MongoOperations mongoOps;
 	private final Class<? extends E> entityType;
 
-	public SpringDataMongoDao(Validator validator, MongoOperations mongoOps, Class<? extends E> entityType) {
-		super(validator);
+	public SpringDataMongoDao(MongoOperations mongoOps, Class<? extends E> entityType) {
 		this.mongoOps = mongoOps;
 		this.entityType = entityType;
 	}
 
 	@Override
-	public E doCreate(E entity) throws DAOException, DuplicateKeyException {
+	public E create(E entity) throws DAOException, DuplicateKeyException {
 		try {
             if(entity.getId() == null){
                 entity.setId(UUID.randomUUID().toString());
@@ -47,7 +46,7 @@ public class SpringDataMongoDao<E extends AbstractEntity> extends ValidatingEnti
 	}
 
 	@Override
-	public E doUpdate(E entity) throws DAOException {
+	public E update(E entity) throws DAOException {
 		mongoOps.save(entity);
 		return entity;
 	}

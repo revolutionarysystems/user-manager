@@ -26,6 +26,7 @@ import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.AccountService;
 import uk.co.revsys.user.manager.service.Constants;
 import uk.co.revsys.user.manager.service.UserService;
+import uk.co.revsys.user.manager.service.exception.ServiceException;
 
 @Path("/accounts")
 public class AccountRestService extends EntityRestService<Account, AccountService> {
@@ -55,6 +56,7 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
                 User existingUser = userService.findByUsername(user.getUsername());
                 if (existingUser != null) {
                     if (existingUser.getStatus().equals(Status.pending)) {
+                        getService().delete(existingUser.getAccount());
                         userService.delete(existingUser.getId());
                     } else {
                         throw new DuplicateKeyException("A user with username " + user.getUsername() + " already exists");
@@ -80,6 +82,9 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
         } catch (ConstraintViolationException ex) {
             LOGGER.error("Failed to create account: " + json, ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to create account: " + json, ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
         }
     }
 
@@ -91,15 +96,7 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             if (!isAuthorisedToCreate(account)) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
-            if (account.getStatus().equals(Status.pending)) {
-                account.setStatus(Status.enabled);
-                account = getService().update(account);
-                List<User> users = getService().getUsers(account);
-                for (User user : users) {
-                    user.setStatus(Status.enabled);
-                    userService.update(user);
-                }
-            }
+            getService().activate(account);
             return Response.ok(toJSONString(account)).build();
         } catch (DAOException ex) {
             LOGGER.error("Failed to activate account: " + id, ex);
@@ -107,7 +104,7 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
         } catch (JsonProcessingException ex) {
             LOGGER.error("Failed to activate account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (DuplicateKeyException ex) {
+        } catch (ServiceException ex) {
             LOGGER.error("Failed to activate account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (ConstraintViolationException ex) {
@@ -124,13 +121,7 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             if (!isAdministrator() && !isOwner(account)) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
-            account.setStatus(Status.disabled);
-            account = getService().update(account);
-            List<User> users = getService().getUsers(account);
-            for (User user : users) {
-                user.setStatus(Status.disabled);
-                userService.update(user);
-            }
+            getService().disable(account);
             return Response.ok(toJSONString(account)).build();
         } catch (DAOException ex) {
             LOGGER.error("Failed to disable account: " + id, ex);
@@ -138,7 +129,7 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
         } catch (JsonProcessingException ex) {
             LOGGER.error("Failed to disable account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-        } catch (DuplicateKeyException ex) {
+        } catch (ServiceException ex) {
             LOGGER.error("Failed to disable account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (ConstraintViolationException ex) {

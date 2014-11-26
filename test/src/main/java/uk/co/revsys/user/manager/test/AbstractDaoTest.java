@@ -40,13 +40,6 @@ public abstract class AbstractDaoTest {
 		EntityDao<Account> dao = getAccountDao();
 		Account account1 = new Account();
 		account1.setName("Test Account");
-        account1.setStatus(null);
-		try {
-			dao.create(account1);
-			fail();
-		} catch (ConstraintViolationException ex) {
-			// Pass
-		}
 		account1.setStatus(Status.pending);
 		Account result = dao.create(account1);
 		String account1Id = result.getId();

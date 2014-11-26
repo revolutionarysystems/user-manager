@@ -1,13 +1,16 @@
 package uk.co.revsys.user.manager.service;
 
+import java.util.logging.Level;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import javax.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.model.Role;
+import uk.co.revsys.user.manager.service.exception.ServiceException;
 
 public class ServiceInitializer implements ServletContextListener{
 	
@@ -36,7 +39,11 @@ public class ServiceInitializer implements ServletContextListener{
 			LOGGER.error("Unable to setup default data", ex);
 		} catch(DuplicateKeyException ex){
 			LOGGER.error("Unable to setup default data", ex);
-		}
+		} catch (ServiceException ex) {
+            LOGGER.error("Unable to setup default data", ex);
+        } catch (ConstraintViolationException ex) {
+            LOGGER.error("Unable to setup default data", ex);
+        }
 	}
 
 	@Override

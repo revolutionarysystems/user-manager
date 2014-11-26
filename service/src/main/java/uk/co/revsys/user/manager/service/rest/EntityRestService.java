@@ -30,6 +30,8 @@ import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.model.AbstractEntity;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.Constants;
+import uk.co.revsys.user.manager.service.exception.ServiceException;
+import uk.co.revsys.user.manager.service.exception.UserAlreadyExistsException;
 
 public abstract class EntityRestService<E extends AbstractEntity, S extends EntityService<E>> {
 
@@ -54,6 +56,9 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             LOGGER.error("Failed to find all entities", ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (DAOException ex) {
+            LOGGER.error("Failed to find all entities", ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ServiceException ex) {
             LOGGER.error("Failed to find all entities", ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
@@ -82,6 +87,9 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
         } catch (ConstraintViolationException ex) {
             LOGGER.error("Failed to create entity: " + json, ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to create entity: " + json, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
@@ -102,6 +110,9 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             LOGGER.error("Failed to find entity: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (DAOException ex) {
+            LOGGER.error("Failed to find entity: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ServiceException ex) {
             LOGGER.error("Failed to find entity: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
@@ -126,7 +137,7 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             jsonConfig.setJsonPropertyFilter(new PropertyFilter() {
                 @Override
                 public boolean apply(Object source, String name, Object value) {
-                    if(!getEntityType().isAssignableFrom(source.getClass())){
+                    if (!getEntityType().isAssignableFrom(source.getClass())) {
                         return false;
                     }
                     return !jsonObject.has(name);
@@ -151,9 +162,12 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
         } catch (IOException ex) {
             LOGGER.error("Failed to update entity " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
-        } catch (DuplicateKeyException ex) {
+        } catch (UserAlreadyExistsException ex) {
             LOGGER.error("Failed to update entity " + id, ex);
             return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to update entity " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
@@ -171,6 +185,9 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             service.delete(id);
             return Response.status(Response.Status.NO_CONTENT).build();
         } catch (DAOException ex) {
+            LOGGER.error("Failed to delete entity: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ServiceException ex) {
             LOGGER.error("Failed to delete entity: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
