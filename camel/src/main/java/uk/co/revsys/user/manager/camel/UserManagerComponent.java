@@ -9,6 +9,7 @@ public class UserManagerComponent extends HttpProxyComponent{
 
     @Override
     protected void populateMappings(Map<String, Class<? extends Processor>> mappings) {
+        mappings.put("getUser", GetUserProcessor.class);
         mappings.put("createAccount", CreateAccountProcessor.class);
         mappings.put("activateAccount", ActivateAccountProcessor.class);
         mappings.put("disableAccount", DisableAccountProcessor.class);
