@@ -5,9 +5,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -18,10 +18,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import net.sf.json.JSONObject;
-import net.sf.json.JsonConfig;
-import net.sf.json.util.PropertyFilter;
 import org.apache.shiro.SecurityUtils;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
@@ -39,12 +37,15 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
 
     private final S service;
     private final ObjectMapper objectMapper;
+    private final ObjectMapper internalObjectMapper;
 
     public EntityRestService(S service) {
         this.service = service;
         this.objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.addMixInAnnotations(User.class, UserJacksonMixin.class);
+        this.internalObjectMapper = new ObjectMapper();
+        internalObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @GET
@@ -132,23 +133,13 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             if (!isAuthorisedToUpdate(existingEntity)) {
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
-            final org.json.JSONObject jsonObject = new org.json.JSONObject(json);
-            JsonConfig jsonConfig = new JsonConfig();
-            jsonConfig.setJsonPropertyFilter(new PropertyFilter() {
-                @Override
-                public boolean apply(Object source, String name, Object value) {
-                    if (!getEntityType().isAssignableFrom(source.getClass())) {
-                        return false;
-                    }
-                    return !jsonObject.has(name);
-                }
-            });
-            JSONObject existingJSON = JSONObject.fromObject(existingEntity);
-            json = filter(new org.json.JSONObject(json), existingEntity).toString();
-            E newEntity = objectMapper.readValue(json, getEntityType());
-            JSONObject newJSON = JSONObject.fromObject(newEntity, jsonConfig);
-            existingJSON.putAll(newJSON);
-            E entity = objectMapper.readValue(existingJSON.toString(), getEntityType());
+            JSONObject existingJSON = new JSONObject(internalObjectMapper.writeValueAsString(existingEntity));
+            json = filter(new JSONObject(json), existingEntity).toString();
+            JSONObject newJSON = new JSONObject(json);
+            for(Object key: newJSON.keySet()){
+                existingJSON.put((String)key, newJSON.get((String)key));
+            }
+            E entity = internalObjectMapper.readValue(existingJSON.toString(), getEntityType());
             entity.setId(id);
             LOGGER.info("Updating " + id + ": " + existingJSON.toString());
             entity = service.update(entity);
@@ -157,8 +148,12 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
             LOGGER.error("Failed to update entity " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         } catch (ConstraintViolationException ex) {
-            LOGGER.error("Failed to update entity " + id, ex);
-            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+            List<String> messages = new ArrayList<String>();
+            for(ConstraintViolation violation: ex.getConstraintViolations()){
+                messages.add(violation.getPropertyPath().toString() + " " + violation.getMessage());
+            }
+            LOGGER.warn("Failed to update entity " + id + " " + messages.toString());
+            return Response.status(Response.Status.BAD_REQUEST).entity(messages.toString()).build();
         } catch (IOException ex) {
             LOGGER.error("Failed to update entity " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
@@ -221,7 +216,15 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
         return true;
     }
 
-    protected org.json.JSONObject filter(org.json.JSONObject json, E entity) {
+    protected JSONObject filter(JSONObject json, E entity) {
+        if (!isAdministrator()) {
+            json.remove("creationTime");
+            json.remove("lastModifiedTime");
+        }
+        return doFilter(json, entity);
+    }
+    
+    protected JSONObject doFilter(JSONObject json, E entity){
         return json;
     }
 

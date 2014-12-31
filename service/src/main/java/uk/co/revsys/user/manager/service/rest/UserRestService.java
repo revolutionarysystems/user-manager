@@ -282,7 +282,7 @@ public class UserRestService extends EntityRestService<User, UserService> {
     }
 
     @Override
-    protected JSONObject filter(JSONObject json, User user) {
+    protected JSONObject doFilter(JSONObject json, User user) {
         if (!(isAdministrator() || isAccountOwner(user))) {
             json.remove("password");
             json.remove("passwordSalt");

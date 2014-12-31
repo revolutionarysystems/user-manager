@@ -116,6 +116,7 @@ public class EntityRestServiceTest extends AbstractShiroTest{
 	public void testUpdate() throws Exception {
 		String id = permission1.getId();
 		Capture<Permission> permissionCapture = new Capture<Permission>();
+        expect(mockSubject.hasRole("user-manager:administrator")).andReturn(true);
 		expect(mockEntityService.findById(id)).andReturn(permission1);
 		expect(mockEntityService.update(capture(permissionCapture))).andReturn(permission1);
 		mocksControl.replay();

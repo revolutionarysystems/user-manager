@@ -1,6 +1,8 @@
 package uk.co.revsys.user.manager.service.rest;
 
+import java.util.Date;
 import javax.ws.rs.core.Response;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
@@ -18,7 +20,6 @@ import uk.co.revsys.user.manager.model.Status;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.test.util.AbstractShiroTest;
 import uk.co.revsys.user.manager.service.AccountService;
-import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.service.UserService;
 
 public class AccountRestServiceTest extends AbstractShiroTest {
@@ -108,16 +109,26 @@ public class AccountRestServiceTest extends AbstractShiroTest {
         Account account = new Account();
         account.setName("Test Account");
         account.setId("1234");
+        Date now = new Date();
+        account.setCreationTime(now);
         account.setStatus(Status.pending);
-        expect(mockSubject.hasRole("user-manager:administrator")).andReturn(true);
+        PrincipalCollection mockPrincipalCollection = mocksControl.createMock(PrincipalCollection.class);
+        User user = new User();
+        user.setAccount("1234");
+        expect(mockSubject.hasRole("user-manager:administrator")).andReturn(false);
+        expect(mockSubject.hasRole("user-manager:account-owner")).andReturn(true);
+        expect(mockSubject.getPrincipals()).andReturn(mockPrincipalCollection);
+        expect(mockPrincipalCollection.oneByType(User.class)).andReturn(user);
+        expect(mockSubject.hasRole("user-manager:administrator")).andReturn(false);
         expect(mockAccountService.findById("1234")).andReturn(account);
         expect(mockAccountService.update(EasyMock.capture(accountCapture))).andReturn(account);
         mocksControl.replay();
-        Response response = accountRestService.update("1234", "{'name': 'Test Account 2', 'attributes': {'attr1': 'value1'}}");
+        Response response = accountRestService.update("1234", "{'creationTime': 1418222461653, 'name': 'Test Account 2', 'attributes': {'attr1': 'value1'}}");
         assertEquals(200, response.getStatus());
         Account capturedAccount = accountCapture.getValue();
         assertEquals("Test Account 2", capturedAccount.getName());
         assertEquals(Status.pending, capturedAccount.getStatus());
+        assertEquals(now.getTime(), capturedAccount.getCreationTime().getTime());
         assertEquals("value1", capturedAccount.getAttributes().get("attr1"));
         mocksControl.verify();
     }
