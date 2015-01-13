@@ -108,7 +108,7 @@
 	
 	<bean id="mongo" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg index="0" ref="mongoClient"/>
-		<constructor-arg index="1" value="user-manager"/>
+		<constructor-arg index="1" value="${db.name}"/>
 	</bean>
 	
 	<bean id="mongoClient" class="uk.co.revsys.utils.mongodb.MongoClient">
