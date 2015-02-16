@@ -27,7 +27,7 @@ import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.model.AbstractEntity;
 import uk.co.revsys.user.manager.model.User;
-import uk.co.revsys.user.manager.service.Constants;
+import uk.co.revsys.user.manager.Constants;
 import uk.co.revsys.user.manager.service.exception.ServiceException;
 import uk.co.revsys.user.manager.service.exception.UserAlreadyExistsException;
 

@@ -31,7 +31,7 @@ import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.model.Permission;
 import uk.co.revsys.user.manager.model.Role;
 import uk.co.revsys.user.manager.model.User;
-import uk.co.revsys.user.manager.service.Constants;
+import uk.co.revsys.user.manager.Constants;
 import uk.co.revsys.user.manager.service.UserService;
 import uk.co.revsys.user.manager.service.exception.ServiceException;
 

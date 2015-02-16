@@ -24,7 +24,7 @@ import uk.co.revsys.user.manager.model.Account;
 import uk.co.revsys.user.manager.model.Status;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.service.AccountService;
-import uk.co.revsys.user.manager.service.Constants;
+import uk.co.revsys.user.manager.Constants;
 import uk.co.revsys.user.manager.service.UserService;
 import uk.co.revsys.user.manager.service.exception.ServiceException;
 

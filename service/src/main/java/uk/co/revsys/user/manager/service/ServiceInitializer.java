@@ -1,5 +1,6 @@
 package uk.co.revsys.user.manager.service;
 
+import uk.co.revsys.user.manager.Constants;
 import java.util.logging.Level;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

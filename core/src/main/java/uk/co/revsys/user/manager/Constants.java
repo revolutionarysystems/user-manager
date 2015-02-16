@@ -1,4 +1,4 @@
-package uk.co.revsys.user.manager.service;
+package uk.co.revsys.user.manager;
 
 public class Constants {
 
