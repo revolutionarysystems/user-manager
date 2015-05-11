@@ -6,32 +6,33 @@ import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 
-public class Account extends AbstractEntity{
+public class Account extends AbstractEntity {
 
-	@NotNull
-	private String name;
-	@NotNull
-	private Status status = Status.enabled;
+    @NotNull
+    private String name;
+    @NotNull
+    private Status status = Status.enabled;
     private Date activationTime;
     private Date disabledTime;
-	private List<String> applications = new ArrayList<String>();
-	private Map<String, Object> attributes;
+    private List<String> applications = new ArrayList<String>();
+    private Map<String, Object> attributes;
+    private int maximumUsers = -1;
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public Status getStatus() {
-		return status;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
     public Date getActivationTime() {
         return activationTime;
@@ -57,12 +58,20 @@ public class Account extends AbstractEntity{
         this.applications = applications;
     }
 
-	public Map<String, Object> getAttributes() {
-		return attributes;
-	}
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
 
-	public void setAttributes(Map<String, Object> attributes) {
-		this.attributes = attributes;
-	}
-	
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
+
+    public int getMaximumUsers() {
+        return maximumUsers;
+    }
+
+    public void setMaximumUsers(int maximumUsers) {
+        this.maximumUsers = maximumUsers;
+    }
+
 }

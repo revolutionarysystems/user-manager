@@ -1,8 +1,11 @@
 package uk.co.revsys.user.manager.service.rest;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.easymock.Capture;
 import org.easymock.EasyMock;
@@ -100,6 +103,61 @@ public class AccountRestServiceTest extends AbstractShiroTest {
         User capturedUser = userCapture.getValue();
         assertEquals("Test User", capturedUser.getName());
         assertEquals("1234", capturedUser.getAccount());
+        mocksControl.verify();
+    }
+    
+    @Test
+    public void testAddUser() throws Exception {
+        JSONObject userJson = new JSONObject();
+        userJson.put("name", "Test User");
+        userJson.put("username", "test@test.com");
+        userJson.put("password", "testing123");
+        Capture<User> userCapture = new Capture<User>();
+        Account account = new Account();
+        account.setName("Test Account");
+        account.setId("1234");
+        account.setMaximumUsers(-1);
+        User user = new User();
+        user.setAccount("1234");
+        List<User> users = new ArrayList<User>();
+        users.add(user);
+        expect(mockSubject.hasRole("user-manager:administrator")).andReturn(false);
+        expect(mockSubject.getPrincipals()).andReturn(new SimplePrincipalCollection(user, "test"));
+        expect(mockSubject.hasRole("user-manager:account-owner")).andReturn(true);
+        expect(mockAccountService.findById("1234")).andReturn(account);
+        //expect(mockAccountService.getUsers(account)).andReturn(users);
+        expect(mockUserService.findByUsername("test@test.com")).andReturn(null);
+        expect(mockUserService.create(capture(userCapture))).andReturn(user);
+        mocksControl.replay();
+        Response response = accountRestService.addUser("1234", userJson.toString());
+        assertEquals(200, response.getStatus());
+        User capturedUser = userCapture.getValue();
+        assertEquals("Test User", capturedUser.getName());
+        assertEquals("1234", capturedUser.getAccount());
+        mocksControl.verify();
+    }
+    
+    @Test
+    public void testAddUserMaximumUsersReached() throws Exception {
+        JSONObject userJson = new JSONObject();
+        userJson.put("name", "Test User");
+        userJson.put("username", "test@test.com");
+        userJson.put("password", "testing123");
+        Capture<User> userCapture = new Capture<User>();
+        Account account = new Account();
+        account.setName("Test Account");
+        account.setId("1234");
+        account.setMaximumUsers(1);
+        User user = new User();
+        user.setAccount("1234");
+        List<User> users = new ArrayList<User>();
+        users.add(user);
+        expect(mockSubject.hasRole("user-manager:administrator")).andReturn(true);
+        expect(mockAccountService.findById("1234")).andReturn(account);
+        expect(mockAccountService.getUsers(account)).andReturn(users);
+        mocksControl.replay();
+        Response response = accountRestService.addUser("1234", userJson.toString());
+        assertEquals(400, response.getStatus());
         mocksControl.verify();
     }
     

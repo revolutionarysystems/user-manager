@@ -32,7 +32,7 @@ import uk.co.revsys.user.manager.service.exception.ServiceException;
 public class AccountRestService extends EntityRestService<Account, AccountService> {
 
     private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(AccountRestService.class);
-    
+
     private final UserService userService;
 
     public AccountRestService(AccountService service, UserService userService) {
@@ -85,6 +85,47 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
         } catch (ServiceException ex) {
             LOGGER.error("Failed to create account: " + json, ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}/addUser")
+    public Response addUser(@PathParam("id") String id, String json) {
+        try {
+            Account account = getService().findById(id);
+            if(!isAuthorisedToUpdate(account)){
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            if (account.getMaximumUsers() > 0 && getService().getUsers(account).size() >= account.getMaximumUsers()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Maximum number of users reached").build();
+            }
+            User user = getObjectMapper().readValue(json, User.class);
+            User existingUser = userService.findByUsername(user.getUsername());
+            if (existingUser != null) {
+                if (existingUser.getStatus().equals(Status.pending)) {
+                    getService().delete(existingUser.getAccount());
+                    userService.delete(existingUser.getId());
+                } else {
+                    throw new DuplicateKeyException("A user with username " + user.getUsername() + " already exists");
+                }
+            }
+            user.setAccount(account.getId());
+            user = userService.create(user);
+            return Response.ok(toJSONString(user)).build();
+        } catch (IOException ex) {
+            LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (DAOException ex) {
+            LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (DuplicateKeyException ex) {
+            LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
