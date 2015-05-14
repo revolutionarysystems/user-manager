@@ -110,4 +110,16 @@ public class UserService extends EntityServiceImpl<User> {
         return resourceRepository.read(resource);
     }
 
+    public void addRole(User user, String role) throws ServiceException, DAOException {
+        if (!user.getRoles().contains(role)) {
+            user.getRoles().add(role);
+            update(user);
+        }
+    }
+
+    public void removeRole(User user, String role) throws ServiceException, DAOException {
+        user.getRoles().remove(role);
+        update(user);
+    }
+
 }

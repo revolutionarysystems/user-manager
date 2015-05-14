@@ -33,6 +33,18 @@ public class AccountService extends EntityServiceImpl<Account> {
         List<User> users = userService.find("account", account.getId());
         return users;
     }
+    
+    public void addRole(Account account, String role) throws DAOException, ServiceException{
+        for(User user: getUsers(account)){
+            userService.addRole(user, role);
+        }
+    }
+    
+    public void removeRole(Account account, String role) throws DAOException, ServiceException{
+        for(User user: getUsers(account)){
+            userService.removeRole(user, role);
+        }
+    }
 
     public void activate(Account account) throws DAOException, ServiceException {
         if (account.getStatus().equals(Status.pending)) {
@@ -56,6 +68,21 @@ public class AccountService extends EntityServiceImpl<Account> {
             for (User user : users) {
                 user.setStatus(Status.disabled);
                 userService.update(user);
+            }
+        }
+    }
+
+    public void enable(Account account) throws DAOException, ServiceException {
+        if (account.getStatus().equals(Status.disabled)) {
+            account.setStatus(Status.enabled);
+            account.setDisabledTime(new Date());
+            account = update(account);
+            List<User> users = getUsers(account);
+            for (User user : users) {
+                if (user.getStatus().equals(Status.disabled)) {
+                    user.setStatus(Status.enabled);
+                    userService.update(user);
+                }
             }
         }
     }

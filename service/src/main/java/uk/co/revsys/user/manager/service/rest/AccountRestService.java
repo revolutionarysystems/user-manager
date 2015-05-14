@@ -139,17 +139,15 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             if(!isAdministrator()){
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
-            List<User> users = getService().getUsers(account);
-            for(User user: users){
-                if(!user.getRoles().contains(role)){
-                    user.getRoles().add(role);
-                }
-            }
+            getService().addRole(account, role);
             return Response.ok(toJSONString(account)).build();
         } catch (DAOException ex) {
             LOGGER.error("Failed to add role " + role + " to account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         } catch (JsonProcessingException ex) {
+            LOGGER.error("Failed to add role " + role + " to account: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
             LOGGER.error("Failed to add role " + role + " to account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
@@ -164,15 +162,15 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             if(!isAdministrator()){
                 return Response.status(Response.Status.FORBIDDEN).build();
             }
-            List<User> users = getService().getUsers(account);
-            for(User user: users){
-                user.getRoles().remove(role);
-            }
+            getService().removeRole(account, role);
             return Response.ok(toJSONString(account)).build();
         } catch (DAOException ex) {
             LOGGER.error("Failed to remove role " + role + " to account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         } catch (JsonProcessingException ex) {
+            LOGGER.error("Failed to remove role " + role + " to account: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
             LOGGER.error("Failed to remove role " + role + " to account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
@@ -224,6 +222,31 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         } catch (ConstraintViolationException ex) {
             LOGGER.error("Failed to disable account: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @POST
+    @Path("/{id}/enable")
+    public Response enable(@PathParam("id") String id) {
+        try {
+            Account account = getService().findById(id);
+            if (!isAdministrator() && !isOwner(account)) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            getService().enable(account);
+            return Response.ok(toJSONString(account)).build();
+        } catch (DAOException ex) {
+            LOGGER.error("Failed to enable account: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Failed to enable account: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to enable account: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        } catch (ConstraintViolationException ex) {
+            LOGGER.error("Failed to enable account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
     }
