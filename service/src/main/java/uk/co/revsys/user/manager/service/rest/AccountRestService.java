@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -125,6 +126,54 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
             return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
         } catch (ServiceException ex) {
             LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}/addRole")
+    public Response addRole(@PathParam("id") String id, @FormParam("role") String role){
+        try {
+            Account account = getService().findById(id);
+            if(!isAdministrator()){
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            List<User> users = getService().getUsers(account);
+            for(User user: users){
+                if(!user.getRoles().contains(role)){
+                    user.getRoles().add(role);
+                }
+            }
+            return Response.ok(toJSONString(account)).build();
+        } catch (DAOException ex) {
+            LOGGER.error("Failed to add role " + role + " to account: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Failed to add role " + role + " to account: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/{id}/removeRole")
+    public Response removeRole(@PathParam("id") String id, @FormParam("role") String role){
+        try {
+            Account account = getService().findById(id);
+            if(!isAdministrator()){
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            List<User> users = getService().getUsers(account);
+            for(User user: users){
+                user.getRoles().remove(role);
+            }
+            return Response.ok(toJSONString(account)).build();
+        } catch (DAOException ex) {
+            LOGGER.error("Failed to remove role " + role + " to account: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Failed to remove role " + role + " to account: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
