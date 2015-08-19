@@ -32,6 +32,7 @@ import uk.co.revsys.user.manager.model.Permission;
 import uk.co.revsys.user.manager.model.Role;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.Constants;
+import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
 import uk.co.revsys.user.manager.service.UserService;
 import uk.co.revsys.user.manager.service.exception.ServiceException;
 
@@ -62,6 +63,38 @@ public class UserRestService extends EntityRestService<User, UserService> {
         } catch (JsonProcessingException ex) {
             LOGGER.error("Failed to return current user", ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @POST
+    @Consumes(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    public Response create(String json) {
+        try {
+            User user = getObjectMapper().readValue(json, User.class);
+            if (!isAuthorisedToCreate(user)) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            user = getService().create(user);
+            String resultJSON = toJSONString(user);
+            JSONObject result = new JSONObject(resultJSON);
+            result.put("verificationCode", user.getVerificationCode());
+            return Response.ok(result.toString()).build();
+        } catch (IOException ex) {
+            LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (DAOException ex) {
+            LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (DuplicateKeyException ex) {
+            LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.CONFLICT).entity(ex.getMessage()).build();
+        } catch (ConstraintViolationException ex) {
+            LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to create user: " + json, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
@@ -109,6 +142,28 @@ public class UserRestService extends EntityRestService<User, UserService> {
         } catch (ServiceException ex) {
             LOGGER.error("Failed to retrieve user permissions: " + userId, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @POST
+    @Path("/{id}/verify")
+    public Response verify(@PathParam("id") String userId, @FormParam("code") String code) {
+        try {
+            User user = getService().findById(userId);
+            if (user == null) {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            getService().verify(user, code);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (DAOException ex) {
+            LOGGER.error("Failed to verify user: " + userId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (ConstraintViolationException ex) {
+            LOGGER.error("Failed to verify user: " + userId, ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to verify user: " + userId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 
@@ -284,6 +339,7 @@ public class UserRestService extends EntityRestService<User, UserService> {
     @Override
     protected JSONObject doFilter(JSONObject json, User user) {
         if (!(isAdministrator() || isAccountOwner(user))) {
+            json.remove("verificationCode");
             json.remove("password");
             json.remove("passwordSalt");
             json.remove("account");

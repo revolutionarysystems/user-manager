@@ -10,6 +10,7 @@ import java.util.UUID;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import org.apache.shiro.authc.credential.DefaultPasswordService;
+import org.apache.shiro.codec.Base64;
 import org.apache.shiro.crypto.hash.Hash;
 import uk.co.revsys.resource.repository.ResourceRepository;
 import uk.co.revsys.resource.repository.model.Resource;
@@ -50,6 +51,7 @@ public class UserService extends EntityServiceImpl<User> {
         user.setPassword(hashedPassword);
         String salt = hash.getSalt().toBase64();
         user.setPasswordSalt(salt);
+        user.setVerificationCode(Base64.encodeToString(UUID.randomUUID().toString().getBytes()));
         return super.create(user);
     }
 
@@ -68,6 +70,15 @@ public class UserService extends EntityServiceImpl<User> {
         Map nameFilter = new HashMap();
         nameFilter.put("username", username);
         return findOne(nameFilter);
+    }
+    
+    public boolean verify(User user, String code) throws DAOException, ServiceException{
+        if(user.getVerificationCode().equals(code)){
+            user.setVerified(true);
+            update(user);
+            return true;
+        }
+        return false;
     }
 
     public User resetPassword(User user) throws DAOException, ServiceException {
