@@ -1,6 +1,6 @@
-
 package uk.co.revsys.user.manager.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayInputStream;
 import org.easymock.EasyMock;
 import org.easymock.IMocksControl;
@@ -16,9 +16,9 @@ import uk.co.revsys.utils.http.HttpClient;
 import uk.co.revsys.utils.http.HttpRequest;
 import uk.co.revsys.utils.http.HttpResponse;
 
-public class EntityClientImplTest {
+public class AccountClientTest {
 
-    public EntityClientImplTest() {
+    public AccountClientTest() {
     }
 
     @BeforeClass
@@ -37,17 +37,11 @@ public class EntityClientImplTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of create method, of class EntityClientImpl.
-     */
     @Test
     public void testCreate() throws Exception {
         IMocksControl mocksControl = EasyMock.createControl();
-        //HttpClient httpClient = new HttpClientImpl();
         HttpClient httpClient = mocksControl.createMock(HttpClient.class);
-        EntityClient<Account> accountClient = new EntityClientImpl(httpClient, "http://localhost:8080/user-manager-service", Account.class);
-        String username = "master-user";
-        String password = "changeme123";
+        AccountClient accountClient = new AccountClient(new UserManagerConnectorImpl(httpClient, "http://test/"), new ObjectMapper());
         Account account = new Account();
         account.setName("Test Account");
         HttpResponse response = new HttpResponse();
@@ -55,7 +49,7 @@ public class EntityClientImplTest {
         response.setInputStream(new ByteArrayInputStream("{\"id\": \"1234\", \"name\": \"Test Account\"}".getBytes()));
         expect(httpClient.invoke(isA(HttpRequest.class))).andReturn(response);
         mocksControl.replay();
-        Account result = accountClient.create(username, password, account);
+        Account result = accountClient.create(account);
         assertNotNull(result);
         assertNotNull(result.getId());
         assertEquals("Test Account", result.getName());
