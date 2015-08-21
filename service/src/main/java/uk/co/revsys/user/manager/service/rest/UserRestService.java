@@ -33,6 +33,7 @@ import uk.co.revsys.user.manager.model.Role;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.Constants;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
+import uk.co.revsys.user.manager.model.Account;
 import uk.co.revsys.user.manager.service.UserService;
 import uk.co.revsys.user.manager.service.exception.ServiceException;
 
@@ -233,6 +234,29 @@ public class UserRestService extends EntityRestService<User, UserService> {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         } catch (ServiceException ex) {
             LOGGER.error("Failed to reset password: " + username, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Produces(javax.ws.rs.core.MediaType.APPLICATION_JSON)
+    @Path("/{id}/addRole")
+    public Response addRole(@PathParam("id") String id, @FormParam("role") String role){
+        try {
+            User user = getService().findById(id);
+            if(!isAdministrator()){
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            getService().addRole(user, role);
+            return Response.ok(toJSONString(user)).build();
+        } catch (DAOException ex) {
+            LOGGER.error("Failed to add role " + role + " to user: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (JsonProcessingException ex) {
+            LOGGER.error("Failed to add role " + role + " to user: " + id, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to add role " + role + " to user: " + id, ex);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
