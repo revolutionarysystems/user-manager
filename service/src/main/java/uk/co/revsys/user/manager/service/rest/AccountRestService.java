@@ -66,7 +66,9 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
                 account = getService().create(account);
                 user.setAccount(account.getId());
                 user = userService.create(user);
-                return Response.ok("{\"account\": " + toJSONString(account) + ", \"user\": " + toJSONString(user) + "}").build();
+                JSONObject userJSON = new JSONObject(toJSONString(user));
+                userJSON.put("verificationCode", user.getVerificationCode());
+                return Response.ok("{\"account\": " + toJSONString(account) + ", \"user\": " + userJSON.toString() + "}").build();
             } else {
                 account = getService().create(account);
                 return Response.ok(toJSONString(account)).build();
