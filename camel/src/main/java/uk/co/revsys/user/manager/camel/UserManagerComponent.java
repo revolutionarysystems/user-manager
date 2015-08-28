@@ -21,8 +21,10 @@ public class UserManagerComponent extends HttpProxyComponent{
         mappings.put("changePassword", ChangePasswordProcessor.class);
         mappings.put("addUser", AddUserProcessor.class);
         mappings.put("addRoleToAccount", AddRoleToAccountProcessor.class);
+        mappings.put("addRoleToUser", AddRoleToUserProcessor.class);
         mappings.put("removeRoleFromAccount", RemoveRoleFromAccountProcessor.class);
         mappings.put("enableAccount", EnableAccountProcessor.class);
+        mappings.put("verifyUser", VerifyUserProcessor.class);
     }
     
 }
