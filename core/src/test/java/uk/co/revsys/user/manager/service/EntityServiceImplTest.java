@@ -58,6 +58,7 @@ public class EntityServiceImplTest {
     public void testCreate() throws Exception {
         Account account = new Account();
         account.setName("Test Account");
+        account.setVerificationCode("abc123");
         account.setStatus(null);
         try {
             entityService.create(account);
@@ -103,6 +104,7 @@ public class EntityServiceImplTest {
     public void testUpdate() throws Exception {
         Account account = new Account();
         account.setName("Test Account");
+        account.setVerificationCode("abc123");
         account.setStatus(null);
         try {
             entityService.create(account);
