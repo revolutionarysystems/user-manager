@@ -18,9 +18,6 @@ public class User extends AbstractEntity{
     private String passwordSalt;
     @NotNull
     private Status status = Status.enabled;
-    private boolean verified = false;
-    @NotNull
-    private String verificationCode;
     private Map<String, Object> attributes = new HashMap<String, Object>();
     @NotNull
     private String account;
@@ -88,22 +85,6 @@ public class User extends AbstractEntity{
     
     public void setRoles(List<String> roles) {
         this.roles = roles;
-    }
-
-    public boolean isVerified() {
-        return verified;
-    }
-
-    public void setVerified(boolean verified) {
-        this.verified = verified;
-    }
-
-    public String getVerificationCode() {
-        return verificationCode;
-    }
-
-    public void setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
     }
     
 }

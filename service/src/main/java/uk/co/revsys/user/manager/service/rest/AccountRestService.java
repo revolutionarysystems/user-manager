@@ -67,11 +67,14 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
                 user.setAccount(account.getId());
                 user = userService.create(user);
                 JSONObject userJSON = new JSONObject(toJSONString(user));
-                userJSON.put("verificationCode", user.getVerificationCode());
-                return Response.ok("{\"account\": " + toJSONString(account) + ", \"user\": " + userJSON.toString() + "}").build();
+                JSONObject accountJSON = new JSONObject(toJSONString(account));
+                accountJSON.put("verificationCode", account.getVerificationCode());
+                return Response.ok("{\"account\": " + accountJSON.toString() + ", \"user\": " + userJSON.toString() + "}").build();
             } else {
                 account = getService().create(account);
-                return Response.ok(toJSONString(account)).build();
+                JSONObject accountJSON = new JSONObject(toJSONString(account));
+                accountJSON.put("verificationCode", account.getVerificationCode());
+                return Response.ok(accountJSON.toString()).build();
             }
         } catch (IOException ex) {
             LOGGER.error("Failed to create account: " + json, ex);
@@ -88,6 +91,28 @@ public class AccountRestService extends EntityRestService<Account, AccountServic
         } catch (ServiceException ex) {
             LOGGER.error("Failed to create account: " + json, ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
+    }
+    
+    @POST
+    @Path("/{id}/verify")
+    public Response verify(@PathParam("id") String accountId, @FormParam("code") String code) {
+        try {
+            Account account = getService().findById(accountId);
+            if (account == null) {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            getService().verify(account, code);
+            return Response.status(Response.Status.NO_CONTENT).build();
+        } catch (DAOException ex) {
+            LOGGER.error("Failed to verify account: " + accountId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (ConstraintViolationException ex) {
+            LOGGER.error("Failed to verify account: " + accountId, ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        } catch (ServiceException ex) {
+            LOGGER.error("Failed to verify account: " + accountId, ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
         }
     }
 

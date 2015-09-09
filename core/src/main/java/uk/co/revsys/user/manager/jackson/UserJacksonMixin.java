@@ -7,7 +7,6 @@ public abstract class UserJacksonMixin {
 
     private String password;
     private String passwordSalt;
-    private String verificationCode;
 
     @JsonIgnore
     public String getPassword() {
@@ -27,16 +26,6 @@ public abstract class UserJacksonMixin {
     @JsonProperty
     public void setPasswordSalt(String passwordSalt) {
         this.passwordSalt = passwordSalt;
-    }
-
-    @JsonIgnore
-    public String getVerificationCode() {
-        return verificationCode;
-    }
-
-    @JsonProperty
-    public void setVerificationCode(String verificationCode) {
-        this.verificationCode = verificationCode;
     }
 
 }

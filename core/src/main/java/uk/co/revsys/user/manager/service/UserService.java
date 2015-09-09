@@ -51,7 +51,6 @@ public class UserService extends EntityServiceImpl<User> {
         user.setPassword(hashedPassword);
         String salt = hash.getSalt().toBase64();
         user.setPasswordSalt(salt);
-        user.setVerificationCode(Base64.encodeToString(UUID.randomUUID().toString().getBytes()));
         return super.create(user);
     }
 
@@ -70,15 +69,6 @@ public class UserService extends EntityServiceImpl<User> {
         Map nameFilter = new HashMap();
         nameFilter.put("username", username);
         return findOne(nameFilter);
-    }
-    
-    public boolean verify(User user, String code) throws DAOException, ServiceException{
-        if(user.getVerificationCode().equals(code)){
-            user.setVerified(true);
-            update(user);
-            return true;
-        }
-        return false;
     }
 
     public User resetPassword(User user) throws DAOException, ServiceException {

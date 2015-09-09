@@ -2,8 +2,10 @@ package uk.co.revsys.user.manager.service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
+import org.apache.shiro.codec.Base64;
 import uk.co.revsys.user.manager.dao.EntityDao;
 import uk.co.revsys.user.manager.dao.exception.DAOException;
 import uk.co.revsys.user.manager.dao.exception.DuplicateKeyException;
@@ -26,7 +28,17 @@ public class AccountService extends EntityServiceImpl<Account> {
         if (account.getStatus().equals(Status.enabled)) {
             account.setActivationTime(new Date());
         }
+        account.setVerificationCode(Base64.encodeToString(UUID.randomUUID().toString().getBytes()));
         return super.create(account);
+    }
+    
+     public boolean verify(Account account, String code) throws DAOException, ServiceException{
+        if(account.getVerificationCode().equals(code)){
+            account.setVerified(true);
+            update(account);
+            return true;
+        }
+        return false;
     }
 
     public List<User> getUsers(Account account) throws DAOException {

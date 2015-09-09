@@ -28,6 +28,8 @@ import uk.co.revsys.user.manager.service.EntityService;
 import uk.co.revsys.user.manager.model.AbstractEntity;
 import uk.co.revsys.user.manager.model.User;
 import uk.co.revsys.user.manager.Constants;
+import uk.co.revsys.user.manager.jackson.AccountJacksonMixin;
+import uk.co.revsys.user.manager.model.Account;
 import uk.co.revsys.user.manager.service.exception.ServiceException;
 import uk.co.revsys.user.manager.service.exception.UserAlreadyExistsException;
 
@@ -44,6 +46,7 @@ public abstract class EntityRestService<E extends AbstractEntity, S extends Enti
         this.objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.addMixInAnnotations(User.class, UserJacksonMixin.class);
+        objectMapper.addMixInAnnotations(Account.class, AccountJacksonMixin.class);
         this.internalObjectMapper = new ObjectMapper();
         internalObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }

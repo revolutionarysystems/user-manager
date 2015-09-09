@@ -5,9 +5,9 @@ import java.util.Map;
 import org.apache.camel.Exchange;
 import uk.co.revsys.esb.component.HttpProxyProcessor;
 
-public class VerifyUserProcessor extends HttpProxyProcessor{
+public class VerifyAccountProcessor extends HttpProxyProcessor{
 
-    public VerifyUserProcessor(String baseUrl) {
+    public VerifyAccountProcessor(String baseUrl) {
         super(baseUrl);
     }
 
@@ -37,7 +37,7 @@ public class VerifyUserProcessor extends HttpProxyProcessor{
 
     @Override
     public String getUrlPath(Exchange exchng) {
-        return "/users/" + getId() + "/verify";
+        return "/accounts/" + getId() + "/verify";
     }
 
     @Override

@@ -13,6 +13,9 @@ public class Account extends AbstractEntity {
     @NotNull
     private Status status = Status.enabled;
     private Date activationTime;
+    private boolean verified = false;
+    @NotNull
+    private String verificationCode;
     private Date disabledTime;
     private List<String> applications = new ArrayList<String>();
     private Map<String, Object> attributes;
@@ -72,6 +75,22 @@ public class Account extends AbstractEntity {
 
     public void setMaximumUsers(int maximumUsers) {
         this.maximumUsers = maximumUsers;
+    }
+    
+    public boolean isVerified() {
+        return verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public String getVerificationCode() {
+        return verificationCode;
+    }
+
+    public void setVerificationCode(String verificationCode) {
+        this.verificationCode = verificationCode;
     }
 
 }
