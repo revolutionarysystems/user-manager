@@ -7,4 +7,4 @@ User Manager  [![Build Status](https://travis-ci.org/revolutionarysystems/user-m
 * [Service](https://github.com/revolutionarysystems/user-manager/tree/master/service)
 * [Mongo](https://github.com/revolutionarysystems/user-manager/tree/master/mongo)
 * 
-trigger build
+
